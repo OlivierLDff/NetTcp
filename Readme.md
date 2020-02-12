@@ -1,6 +1,6 @@
 # NetTcp
 
-NetTcp provide a Tcp `Server` that create Tcp `Socket` for each incoming connections for server side. 
+NetTcp provide a Tcp `Server` that create Tcp `Socket` for each incoming connections for server side.
 
 A `Socket` can also be used on client side to connect to a remote server.
 
@@ -10,7 +10,7 @@ A `Socket` can also be used on client side to connect to a remote server.
 
 ### Introduction
 
-This library have 3 main classes: 
+This library have 3 main classes:
 
 * `Server`: Listen for incoming connection from a client. Create a new socket for each client.
 * `Socket`: Allow to send data and receive data from a client. Or to connect to server and send/receive data.
@@ -36,7 +36,7 @@ Let's start by implementing a custom `SocketWorker`.
 
 * Inherit from `Net::Tcp::SocketWorker`.
   * It's a QObject, so don't forget the Q_OBJECT macro.
-* Override `void onDataAvailable()`. This function will be called each time new data is available to poll. 
+* Override `void onDataAvailable()`. This function will be called each time new data is available to poll.
   * This function run in the worker thread. It' can either be a thread created by owning `Server`, or `Server` thread.
   * Call `size_t bytesAvailable()` to know how many bytes are in system buffer.
   * Call `size_t read(uint8_t* buffer, size_t max)` to read at maximum `max` bytes. The function return the real number of byte read.
@@ -45,7 +45,7 @@ Let's start by implementing a custom `SocketWorker`.
     * If the owning `Socket` have been created by a `Server`, the `Socket` will be completely destroy. It's the client responsibility to reconnect.
 * Call `size_t write(const uint8_t* buffer, const size_t length)` to write data to the stream. The function returned the number of byte written. If byte written is 0 then retry later. Every buffer are full.
 
-The example is self explanatory. 
+The example is self explanatory.
 
 * The function that write the data first write the header then write the payload (the string)
 * The function that read wait for a header to read. Then poll every possible byte until the full string got read.
@@ -82,7 +82,7 @@ public:
             return closeAndRestart();
 
         // Go to next state waiting for data
-        waitingForData = true;        
+        waitingForData = true;
     }
 
     void onDataAvailable() override final
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
 By default the server will listen on any interface. It's also possible to listen only a specified interface by calling `bool start(const QString& address, const quint16 port)`.
 
-A watchdog will take care a rebinding to the interface/port if something failed. 
+A watchdog will take care a rebinding to the interface/port if something failed.
 
 * You can customize the watchdog with `bool setWatchdogPeriod(const quint64& ms)`.
 
@@ -259,7 +259,7 @@ It's possible to react to multiple signals from the `Server`.
 
 An example that implement a client/server connection that exchange string is available in `examples` folder.
 
-```
+```bash
 > NetTcp_EchoClientServer -h
 
 Options:
@@ -267,36 +267,7 @@ Options:
   -t                Make the worker live in a different thread. Default false
   -s, --src <port>  Port for rx packet. Default "9999".
   -i, --ip <ip>     Ip address of multicast group. Default "127.0.0.1"
-
 ```
-
-
-
-### Out of the box usage
-
-A Basic Client/Server can be found in `examples/EchoClientServer.cpp`.
-
-#### Server
-
-This example demonstrate how to create a server that send datagram to address `127.0.0.1` on port `9999`.$> NetTcp_EchoMulticastLoopback --help
-
-Options:
-
-  -?, -h, --help          Displays this help.
-
-  -t                      Make the worker live in a different thread. Default
-
-​                          false
-
-  -p                      Print available multicast interface name
-
-  -s, --src <port>        Port for rx packet. Default "11111".
-
-  -i, --ip <ip>           Ip address of multicast group. Default "239.0.0.1"
-
-  --if, --interface <if>  Name of the iface to join. Default is os dependent
-
-
 
 ## Qml Debug
 
