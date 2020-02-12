@@ -379,7 +379,7 @@ In your `CMakeLists.txt`:
 include(FetchContent)
 FetchContent_Declare(
     NetTcp
-    GIT_REPOSITORY "https://github.com/Naostage/NetTcp"
+    GIT_REPOSITORY "https://github.com/OlivierLDff/NetTcp"
     GIT_TAG        "master"
 )
 # ...
