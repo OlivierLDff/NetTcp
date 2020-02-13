@@ -62,6 +62,9 @@ public Q_SLOTS:
     bool start(const QString& host, const quint16 port) override;
     bool stop() override;
 
+private:
+    void killWorker();
+
     // ──────── CUSTOM WORKER API ────────
 protected:
     virtual std::unique_ptr<class SocketWorker> createWorker();

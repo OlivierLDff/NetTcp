@@ -32,11 +32,7 @@ Socket::Socket(QObject* parent): AbstractSocket(parent), _impl(std::make_unique<
 
 Socket::~Socket()
 {
-    if (_workerThread)
-    {
-        _workerThread->exit();
-        _workerThread->wait();
-    }
+    killWorker();
 }
 
 bool Socket::start()
@@ -47,7 +43,7 @@ bool Socket::start()
     if (socketDescriptor())
         qCDebug(SOCKET_LOG_CAT, "Start tcp socket via socketDescriptor %d", signed(socketDescriptor()));
     else
-        qCDebug(SOCKET_LOG_CAT, "Start tcp socket to %s : %d", qPrintable(address()), signed(port()));
+        qCDebug(SOCKET_LOG_CAT, "Start tcp socket to %s : %d", qPrintable(peerAddress()), signed(peerPort()));
 
     Q_ASSERT(_worker.get() == nullptr);
     Q_ASSERT(_workerThread.get() == nullptr);
@@ -75,15 +71,20 @@ bool Socket::start()
     else
     {
         _worker->_watchdogPeriod = watchdogPeriod();
-        _worker->_address = address();
-        _worker->_port = port();
+        _worker->_address = peerAddress();
+        _worker->_port = peerPort();
     }
 
-    connect(_worker.get(), &SocketWorker::startSuccess, [this](const QString& address, const quint16 port)
+    connect(_worker.get(), &SocketWorker::startSuccess, [this](const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort)
     {
-         setPeerAddress(address);
-         setPeerPort(port);
-         Q_EMIT startSuccess(address, port);
+        if(socketDescriptor())
+        {
+            setPeerAddress(peerAddress);
+            setPeerPort(peerPort);            
+        }
+        setLocalAddress(localAddress);
+        setLocalPort(localPort);
+         Q_EMIT startSuccess(peerAddress, peerPort);
     });
     connect(_worker.get(), &SocketWorker::startFailed, [this]()
     {
@@ -132,21 +133,29 @@ bool Socket::stop()
     AbstractSocket::stop();
 
     Q_EMIT _impl->stopWorker();
-
-    if(_workerThread)
-    {
-        _workerThread->exit();
-        _workerThread->wait();
-        _workerThread = nullptr;
-        _worker = nullptr;
-    }
-    else
-    {
-        _worker->deleteLater();
-        _worker.release();
-    }
+    killWorker();
 
     return true;
+}
+
+void Socket::killWorker()
+{
+    if(_worker)
+    {
+        disconnect(_worker.get(), nullptr, this, nullptr);
+        disconnect(this, nullptr, _worker.get(), nullptr);
+        disconnect(_impl.get(), nullptr, _worker.get(), nullptr);
+    }
+    if (_workerThread)
+    {
+        _workerThread->exit();
+        _workerThread.release()->deleteLater();
+        _worker.release()->deleteLater();
+    }
+    else if (_worker)
+    {
+        _worker.release()->deleteLater();
+    }
 }
 
 std::unique_ptr<SocketWorker> Socket::createWorker()

@@ -37,8 +37,8 @@ public:
 
     // ──────── ATTRIBUTE ────────
 public:
-    bool setAddress(const QString& value) override;
-    bool setPort(const quint16& value) override;
+    bool setPeerAddress(const QString& value) override;
+    bool setPeerPort(const quint16& value) override;
     bool setUseWorkerThread(const bool& value) override;
 
     // ──────── C++ API ────────

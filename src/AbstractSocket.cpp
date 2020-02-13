@@ -25,21 +25,23 @@ AbstractSocket::AbstractSocket(QObject* parent): ISocket(parent)
 {
 }
 
-bool AbstractSocket::setAddress(const QString& value)
+bool AbstractSocket::setPeerAddress(const QString& value)
 {
-    if (ISocket::setAddress(value))
+    if (ISocket::setPeerAddress(value))
     {
-        restart();
+        if (!socketDescriptor())
+            restart();
         return true;
     }
     return false;
 }
 
-bool AbstractSocket::setPort(const quint16& value)
+bool AbstractSocket::setPeerPort(const quint16& value)
 {
-    if (ISocket::setPort(value))
+    if (ISocket::setPeerPort(value))
     {
-        restart();
+        if(!socketDescriptor())
+            restart();
         return true;
     }
     return false;
@@ -73,8 +75,8 @@ bool AbstractSocket::start(quintptr socketDescriptor)
 
 bool AbstractSocket::start(const QString& host, const quint16 port)
 {
-    setAddress(host);
-    setPort(port);
+    setPeerAddress(host);
+    setPeerPort(port);
     return start();
 }
 

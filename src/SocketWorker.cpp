@@ -34,7 +34,10 @@ SocketWorker::~SocketWorker() = default;
 
 void SocketWorker::onStart()
 {
-    qCDebug(SOCKET_WORKER_LOG_CAT, "onStart tcp socket worker");
+    if(_socketDescriptor)
+        qCDebug(SOCKET_WORKER_LOG_CAT, "onStart tcp socket worker %d", signed(_socketDescriptor));
+    else
+        qCDebug(SOCKET_WORKER_LOG_CAT, "onStart tcp socket worker %s:%d", qPrintable(_address), signed(_port));
     Q_ASSERT(!_socket);
     _socket = std::make_unique<QTcpSocket>(this);
     if (_socketDescriptor)
@@ -125,10 +128,7 @@ void SocketWorker::onSocketStateChanged(QAbstractSocket::SocketState socketState
     qCDebug(SOCKET_WORKER_LOG_CAT, "New Socket state : %d", socketState);
     if (socketState == QAbstractSocket::UnconnectedState)
     {
-        Q_EMIT connectionChanged(false);
-        //_reconnectWatchdog.start();
-        if (!_socketDescriptor)
-            closeAndRestart();
+        onDisconnected();
     }
 }
 
@@ -137,16 +137,19 @@ void SocketWorker::onConnected()
     stopWatchdog();
     qCDebug(SOCKET_WORKER_LOG_CAT, "Socket is connected to %s:%d", qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
     Q_EMIT connectionChanged(true);
-    Q_EMIT startSuccess(_socket ? _socket->peerAddress().toString() : "", _socket ? _socket->peerPort() : 0);
+    Q_EMIT startSuccess(_socket ? _socket->peerAddress().toString() : "", _socket ? _socket->peerPort() : 0, _socket ? _socket->localAddress().toString() : "", _socket ? _socket->localPort() : 0);
 
     startBytesCounter();
 }
 
 void SocketWorker::onDisconnected()
 {
+    qCDebug(SOCKET_WORKER_LOG_CAT, "Socket disconnected from %s:%d", qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
     Q_EMIT connectionChanged(false);
     if (!_socketDescriptor)
         closeAndRestart();
+
+    stopBytesCounter();
 }
 
 void SocketWorker::onDataAvailable()
@@ -187,11 +190,12 @@ void SocketWorker::onWatchdogTimeout()
 
 void SocketWorker::closeAndRestart()
 {
+    qCDebug(SOCKET_WORKER_LOG_CAT, "Close and restart socket later Call");
     if (!_isRunning)
         return;
 
     // Don't restart again
-    if (_watchdog && _watchdog->remainingTime() < int(_watchdogPeriod))
+    if (_watchdog && (_watchdog->remainingTime() > 0) && _watchdog->remainingTime() < int(_watchdogPeriod))
         return;
 
     closeSocket();
@@ -201,6 +205,7 @@ void SocketWorker::closeAndRestart()
 
         connect(_watchdog.get(), &QTimer::timeout, this, &SocketWorker::onWatchdogTimeout);
         _watchdog->setTimerType(Qt::VeryCoarseTimer);
+        _watchdog->setSingleShot(true);
     }
     _watchdog->start(_watchdogPeriod);
     qCDebug(SOCKET_WORKER_LOG_CAT, "Start worker watchdog to attempt reconnection in %d ms", signed(_watchdogPeriod));

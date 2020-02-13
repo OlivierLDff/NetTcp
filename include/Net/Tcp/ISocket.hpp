@@ -43,10 +43,10 @@ protected:
 
     // ──────── ATTRIBUTE ────────
 protected:
-    NETTCP_PROPERTY         (QString, address, Address);
-    NETTCP_PROPERTY         (quint16, port, Port);
-    NETTCP_PROPERTY_RO      (QString, peerAddress, PeerAddress);
-    NETTCP_PROPERTY_RO      (quint16, peerPort, PeerPort);
+    NETTCP_PROPERTY_RO      (QString, localAddress, LocalAddress);
+    NETTCP_PROPERTY_RO      (quint16, localPort, LocalPort);
+    NETTCP_PROPERTY         (QString, peerAddress, PeerAddress);
+    NETTCP_PROPERTY         (quint16, peerPort, PeerPort);
     NETTCP_PROPERTY         (quintptr, socketDescriptor, SocketDescriptor);
     NETTCP_PROPERTY         (bool, useWorkerThread, UseWorkerThread);
 

@@ -290,6 +290,10 @@ Rectangle
 {
     property NetTcp.Server server
     property NetTcp.Socket client
+    
+    width: 300
+    height: 300
+    
     Column
     {
         width: parent.width

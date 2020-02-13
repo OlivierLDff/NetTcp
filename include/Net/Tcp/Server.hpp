@@ -29,7 +29,7 @@ class ServerWorker;
 class NETTCP_API_ Server : public AbstractServer
 {
     Q_OBJECT
-    NETTCP_REGISTER_TO_QML(AbstractServer)
+    NETTCP_REGISTER_TO_QML(Server)
 
     // ──────── CONSTRUCTOR ────────
 public:

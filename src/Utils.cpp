@@ -11,6 +11,7 @@
 // Qt Header
 #include <QCoreApplication>
 #include <QLoggingCategory>
+#include <QAbstractSocket>
 
 // ─────────────────────────────────────────────────────────────
 //                  DECLARATION
@@ -45,6 +46,8 @@ static void NetTcp_registerTypes()
 
     qCDebug(NETTCP_UTILS_LOG_CAT, "Register %s.Socket %d.%d to QML", *_uri, _major, _minor);
     Net::Tcp::Socket::registerToQml(*_uri, _major, _minor);
+
+    qRegisterMetaType<QAbstractSocket::SocketState>();
 }
 
 static void NetTcp_registerTypes(const char* uri, const quint8 major, const quint8 minor)
@@ -59,8 +62,7 @@ static void NetTcp_registerTypes(const char* uri, const quint8 major, const quin
 void NetTcp_loadResources()
 {
     qCDebug(NETTCP_UTILS_LOG_CAT, "Load NetTcp.qrc v%s", qPrintable(Net::Tcp::Version::version().readable()));
-    //Q_INIT_RESOURCE(NetTcp);
-    // todo : uncomment when qml debug will be done
+    Q_INIT_RESOURCE(NetTcp);
 }
 
 #ifndef NETTCP_STATIC

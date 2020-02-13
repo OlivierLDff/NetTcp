@@ -216,7 +216,7 @@ bool Server::start(const QString& address, const quint16 port)
 
 bool Server::stop()
 {
-    AbstractServer::start();
+    AbstractServer::stop();
 
     stopWatchdog();
     stopWorker();

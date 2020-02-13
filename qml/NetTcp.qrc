@@ -3,7 +3,10 @@
 
     <!-- DEBUG -->
     <file>Debug/qmldir</file>
-    <!-- <file>Debug/Server.qml</file> -->
+    <file>Debug/Server.qml</file>
+    <file>Debug/ServerContent.qml</file>
+    <file>Debug/Socket.qml</file>
+    <file>Debug/SocketContent.qml</file>
 
     </qresource>
 </RCC>

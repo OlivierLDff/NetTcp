@@ -71,8 +71,8 @@ AbstractSocket* AbstractServer::getSocket(const QString& address, const quint16 
 {
     for(const auto it : *this)
     {
-        if (address == it->address() &&
-            port == it->port())
+        if (address == it->peerAddress() &&
+            port == it->peerPort())
             return it;
     }
     return nullptr;
@@ -83,7 +83,7 @@ QList<AbstractSocket*> AbstractServer::getSocket(const QString& address)
     QList<AbstractSocket*> l;
     for (const auto it : *this)
     {
-        if (address == it->address())
+        if (address == it->peerAddress())
             l.append(it);
     }
     return l;

@@ -70,7 +70,7 @@ protected Q_SLOTS:
     virtual void onDisconnected();
 
 Q_SIGNALS:
-    void startSuccess(const QString& s, const quint16 port);
+    void startSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort);
     void startFailed();
     void connectionChanged(bool connected);
     void socketError(int error, QString description);
