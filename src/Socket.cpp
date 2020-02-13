@@ -60,8 +60,6 @@ bool Socket::start()
         else
             _workerThread->setObjectName("Socket Worker");
         _worker->moveToThread(_workerThread.get());
-
-        //connect(_workerThread.get(), &QThread::finished, _worker.get(), &SocketWorker::deleteLater);
     }
 
     if (socketDescriptor())
@@ -140,21 +138,21 @@ bool Socket::stop()
 
 void Socket::killWorker()
 {
-    if(_worker)
-    {
-        disconnect(_worker.get(), nullptr, this, nullptr);
-        disconnect(this, nullptr, _worker.get(), nullptr);
-        disconnect(_impl.get(), nullptr, _worker.get(), nullptr);
-    }
+    SocketWorker* workerPtr = nullptr;
     if (_workerThread)
     {
         _workerThread->exit();
-        _workerThread.release()->deleteLater();
-        _worker.release()->deleteLater();
+        _workerThread->wait();
+        _workerThread = nullptr;
+        _worker = nullptr;
     }
     else if (_worker)
     {
-        _worker.release()->deleteLater();
+        workerPtr = _worker.release();
+        disconnect(workerPtr, nullptr, this, nullptr);
+        disconnect(this, nullptr, workerPtr, nullptr);
+        disconnect(_impl.get(), nullptr, workerPtr, nullptr);
+        workerPtr->deleteLater();
     }
 }
 
