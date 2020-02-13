@@ -63,11 +63,11 @@ public:
     size_t read(char* data, size_t maxLen);
 
     // ──────── COMMUNICATION TO SOCKET ────────
-private Q_SLOTS:
+protected Q_SLOTS:
     void onSocketError(const QAbstractSocket::SocketError e);
     void onSocketStateChanged(QAbstractSocket::SocketState socketState);
-    void onConnected();
-    void onDisconnected();
+    virtual void onConnected();
+    virtual void onDisconnected();
 
 Q_SIGNALS:
     void startSuccess(const QString& s, const quint16 port);
