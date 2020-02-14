@@ -50,7 +50,7 @@ public:
     ~Socket();
 
     // ──────── WORKER ────────
-protected:
+private:
     std::unique_ptr<SocketImpl> _impl;
     std::unique_ptr<SocketWorker> _worker;
     std::unique_ptr<QThread> _workerThread;
