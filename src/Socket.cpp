@@ -118,7 +118,6 @@ bool Socket::stop()
 
 void Socket::killWorker()
 {
-    SocketWorker* workerPtr = nullptr;
     if (_workerThread)
     {
         _workerThread->exit();
@@ -128,7 +127,7 @@ void Socket::killWorker()
     }
     else if (_worker)
     {
-        workerPtr = _worker.release();
+        const auto workerPtr = _worker.release();
         disconnect(workerPtr, nullptr, this, nullptr);
         disconnect(this, nullptr, workerPtr, nullptr);
         disconnect(_impl.get(), nullptr, workerPtr, nullptr);
