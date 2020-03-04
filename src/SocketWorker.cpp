@@ -157,6 +157,11 @@ void SocketWorker::onDataAvailable()
     qCDebug(SOCKET_WORKER_LOG_CAT, "Warning : you need to override onDataAvailable");
 }
 
+bool SocketWorker::isConnected() const
+{
+    return _socket && _socket->state() == QAbstractSocket::ConnectedState;
+}
+
 size_t SocketWorker::bytesAvailable() const
 {
     return _socket ? _socket->bytesAvailable() : 0;

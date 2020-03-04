@@ -133,25 +133,30 @@ Column
         spacing: 10
         Qaterial.Label
         {
-            text: "rxBytesPerSeconds : " + (root.object ? root.object.rxBytesPerSeconds : "")
+            text: "rx/s : " + (root.object ? root.object.rxBytesPerSeconds : "") + " bytes"
             textType: Qaterial.Style.TextType.Caption
         }
 
         Qaterial.Label
         {
-            text: "txBytesPerSeconds : " + (root.object ? root.object.txBytesPerSeconds : "")
+            text: "tx/s : " + (root.object ? root.object.txBytesPerSeconds : "") + " bytes"
+            textType: Qaterial.Style.TextType.Caption
+        }
+    } // Row
+
+    Row
+    {
+        spacing: 10
+
+        Qaterial.Label
+        {
+            text: "rx : " + (root.object ? root.object.rxBytesTotal : "") + " bytes"
             textType: Qaterial.Style.TextType.Caption
         }
 
         Qaterial.Label
         {
-            text: "rxBytesTotal : " + (root.object ? root.object.rxBytesTotal : "")
-            textType: Qaterial.Style.TextType.Caption
-        }
-
-        Qaterial.Label
-        {
-            text: "txBytesTotal : " + (root.object ? root.object.txBytesTotal : "")
+            text: "tx : " + (root.object ? root.object.txBytesTotal : "") + " bytes"
             textType: Qaterial.Style.TextType.Caption
         }
     } // Row

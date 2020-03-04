@@ -57,6 +57,7 @@ public:
     // ──────── READ API ────────
 public Q_SLOTS:
     virtual void onDataAvailable();
+    bool isConnected() const;
 public:
     size_t bytesAvailable() const;
     size_t read(uint8_t* data, size_t maxLen);
