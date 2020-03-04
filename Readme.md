@@ -44,6 +44,7 @@ Let's start by implementing a custom `SocketWorker`.
     * If the owning `Socket` have been created as a client, then it will reconnect to remote server later.
     * If the owning `Socket` have been created by a `Server`, the `Socket` will be completely destroy. It's the client responsibility to reconnect.
 * Call `size_t write(const uint8_t* buffer, const size_t length)` to write data to the stream. The function returned the number of byte written. If byte written is 0 then retry later. Every buffer are full.
+* **Don't forget to reset the *State Machine* when server disconnect or reconnect.**
 
 The example is self explanatory.
 
@@ -58,6 +59,7 @@ class MySocketWorker : public Net::Tcp::SocketWorker
 public:
     MySocketWorker(QObject* parent = nullptr) : Net::Tcp::SocketWorker(parent) {}
 
+private:
     bool waitingForData = false;
     uint8_t buffer[128] = {};
     uint8_t bufferLength = 0;
@@ -85,6 +87,14 @@ public:
         waitingForData = true;
     }
 
+protected Q_SLOTS:
+    // !! DONT FORGET TO RELEASE BUFFER !! IMPORTANT !! //
+    void onConnected() override final
+    {
+        Net::Tcp::SocketWorker::onConnected();
+        waitingForData = false;
+        bufferLength = 0;        
+    }
     void onDataAvailable() override final
     {
         // Read header if not done

@@ -74,6 +74,16 @@ bool Server::setPort(const quint16& value)
     return false;
 }
 
+bool Server::setUseWorkerThread(const bool& value)
+{
+    if (AbstractServer::setUseWorkerThread(value))
+    {
+        restart();
+        return true;
+    }
+    return false;
+}
+
 bool Server::tryStart()
 {
     stopWatchdog();
@@ -171,6 +181,7 @@ void Server::onNewIncomingConnection(qintptr handle)
         return;
 
     auto socket = newTcpSocket(this);
+    socket->setUseWorkerThread(useWorkerThread());
 
     qCDebug(SERVER_LOG_CAT, "Connect to new client");
     connect(socket, &Socket::startFailed, [this, socket]()

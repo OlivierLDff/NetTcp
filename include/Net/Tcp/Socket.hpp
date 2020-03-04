@@ -50,7 +50,7 @@ public:
     ~Socket();
 
     // ──────── WORKER ────────
-protected:
+private:
     std::unique_ptr<SocketImpl> _impl;
     std::unique_ptr<SocketWorker> _worker;
     std::unique_ptr<QThread> _workerThread;
@@ -62,8 +62,12 @@ public Q_SLOTS:
     bool start(const QString& host, const quint16 port) override;
     bool stop() override;
 
-private:
+private Q_SLOTS:
     void killWorker();
+    void onStartSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort);
+    void onStartFail();
+    void onBytesReceived(const uint64_t count);
+    void onBytesSent(const uint64_t count);
 
     // ──────── CUSTOM WORKER API ────────
 protected:

@@ -46,6 +46,7 @@ protected:
     NETTCP_PROPERTY_D           (quint64, watchdogPeriod, WatchdogPeriod, 1000);
     NETTCP_PROPERTY             (QString, address, Address);
     NETTCP_PROPERTY             (quint16, port, Port);
+    NETTCP_PROPERTY             (bool, useWorkerThread, UseWorkerThread);
 
     // ──────── C++ API ────────
 public Q_SLOTS:

@@ -27,10 +27,19 @@ class MySocketWorker : public Net::Tcp::SocketWorker
 public:
     MySocketWorker(QObject* parent = nullptr) : Net::Tcp::SocketWorker(parent) {}
 
+private:
     bool waitingForData = false;
     uint8_t buffer[128] = {};
     uint8_t bufferLength = 0;
     uint8_t expectedSize = 0;
+
+protected Q_SLOTS:
+    void onConnected() override final
+    {
+        Net::Tcp::SocketWorker::onConnected();
+        waitingForData = false;
+        bufferLength = 0;
+    }
 
     void readHeader()
     {
@@ -51,7 +60,7 @@ public:
             return closeAndRestart();
 
         // Go to next state waiting for data
-        waitingForData = true;        
+        waitingForData = true;
     }
 
     void onDataAvailable() override

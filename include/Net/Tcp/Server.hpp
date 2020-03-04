@@ -41,6 +41,7 @@ public:
     bool setWatchdogPeriod(const quint64& value) override;
     bool setAddress(const QString& value) override;
     bool setPort(const quint16& value) override;
+    bool setUseWorkerThread(const bool& value) override;
 
     // ──────── C++ API ────────
 public Q_SLOTS:

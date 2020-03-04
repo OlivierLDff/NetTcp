@@ -58,7 +58,12 @@ bool Socket::start()
         if (objectName().size())
             _workerThread->setObjectName(objectName() + " Worker");
         else
-            _workerThread->setObjectName("Socket Worker");
+        {
+            if (socketDescriptor())
+                _workerThread->setObjectName("Socket Worker sd" + QString::number(socketDescriptor()));
+            else
+                _workerThread->setObjectName("Socket Worker " + peerAddress() + ":" + QString::number(peerPort()));
+        }
         _worker->moveToThread(_workerThread.get());
     }
 
@@ -73,39 +78,14 @@ bool Socket::start()
         _worker->_port = peerPort();
     }
 
-    connect(_worker.get(), &SocketWorker::startSuccess, [this](const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort)
-    {
-        if(socketDescriptor())
-        {
-            setPeerAddress(peerAddress);
-            setPeerPort(peerPort);            
-        }
-        setLocalAddress(localAddress);
-        setLocalPort(localPort);
-         Q_EMIT startSuccess(peerAddress, peerPort);
-    });
-    connect(_worker.get(), &SocketWorker::startFailed, [this]()
-    {
-        setConnected(false);
-    });
-    connect(_worker.get(), &SocketWorker::startFailed, this, &Socket::startFailed);
+    connect(_worker.get(), &SocketWorker::startSuccess, this, &Socket::onStartSuccess);
+    connect(_worker.get(), &SocketWorker::startFailed, this, &Socket::onStartFail);
     connect(_worker.get(), &SocketWorker::connectionChanged, this, &Socket::setConnected);
     connect(_worker.get(), &SocketWorker::socketError, this, &Socket::socketError);
-    connect(_worker.get(), &SocketWorker::bytesReceived, [this](const quint64 count)
-        {
-            setRxBytesPerSeconds(count);
-            setRxBytesTotal(rxBytesTotal() + count);
-        });
-
-    connect(_worker.get(), &SocketWorker::bytesSent, [this](const quint64 count)
-        {
-            setTxBytesPerSeconds(count);
-            setTxBytesTotal(txBytesTotal() + count);
-        });
-
+    connect(_worker.get(), &SocketWorker::bytesReceived, this, &Socket::onBytesReceived);
+    connect(_worker.get(), &SocketWorker::bytesSent, this, &Socket::onBytesSent);
     connect(_impl.get(), &SocketImpl::startWorker, _worker.get(), &SocketWorker::onStart);
     connect(_impl.get(), &SocketImpl::stopWorker, _worker.get(), &SocketWorker::onStop);
-
     connect(this, &Socket::watchdogPeriodChanged, _worker.get(), &SocketWorker::onWatchdogPeriodChanged);
 
     if(_workerThread)
@@ -138,7 +118,6 @@ bool Socket::stop()
 
 void Socket::killWorker()
 {
-    SocketWorker* workerPtr = nullptr;
     if (_workerThread)
     {
         _workerThread->exit();
@@ -148,12 +127,43 @@ void Socket::killWorker()
     }
     else if (_worker)
     {
-        workerPtr = _worker.release();
+        const auto workerPtr = _worker.release();
         disconnect(workerPtr, nullptr, this, nullptr);
         disconnect(this, nullptr, workerPtr, nullptr);
         disconnect(_impl.get(), nullptr, workerPtr, nullptr);
         workerPtr->deleteLater();
     }
+}
+
+void Socket::onStartSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress,
+    const quint16 localPort)
+{
+    if (socketDescriptor())
+    {
+        setPeerAddress(peerAddress);
+        setPeerPort(peerPort);
+    }
+    setLocalAddress(localAddress);
+    setLocalPort(localPort);
+    Q_EMIT startSuccess(peerAddress, peerPort);
+}
+
+void Socket::onStartFail()
+{
+    resetConnected();
+    Q_EMIT startFailed();
+}
+
+void Socket::onBytesReceived(const uint64_t count)
+{
+    setRxBytesPerSeconds(count);
+    setRxBytesTotal(rxBytesTotal() + count);
+}
+
+void Socket::onBytesSent(const uint64_t count)
+{
+    setTxBytesPerSeconds(count);
+    setTxBytesTotal(txBytesTotal() + count);
 }
 
 std::unique_ptr<SocketWorker> Socket::createWorker()

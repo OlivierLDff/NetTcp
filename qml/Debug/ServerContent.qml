@@ -116,6 +116,7 @@ Column
         {
             topInset: 0
             bottomInset: 0
+            anchors.verticalCenter: parent.verticalCenter
             textType: Qaterial.Style.TextType.Caption
             backgroundImplicitHeight: 20
             text: root.object && root.object.isRunning ? "Stop" : "Start"
@@ -149,6 +150,17 @@ Column
                     root.object.restart()
                 }
             }
+        }
+
+        Qaterial.SwitchButton
+        {
+            text: "worker thread"
+            implicitHeight: 32
+            anchors.verticalCenter: parent.verticalCenter
+            checked: root.object && root.object.useWorkerThread
+            elide: Text.ElideRight
+            textType: Qaterial.Style.TextType.Caption
+            onClicked: if(root.object) root.object.useWorkerThread = checked
         }
     }
 
