@@ -59,7 +59,6 @@ set(NETTCP_INSTALL_PREFIX ${NETTCP_PROJECT} CACHE STRING "Prefix for all NetTcp 
 
 project(${NETTCP_PROJECT} VERSION ${NETTCP_VERSION} LANGUAGES C CXX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_CXX_STANDARD 14)
 
 # LOG OPTIONS
 
@@ -211,6 +210,9 @@ else(NETTCP_BUILD_SHARED)
     target_compile_definitions(${NETTCP_TARGET} PUBLIC "-DNETTCP_STATIC")
 
 endif(NETTCP_BUILD_SHARED)
+
+# Set cxx 14 only on target and not the whole project
+target_compile_features(${NETTCP_TARGET} PUBLIC cxx_std_14)
 
 # Set include directory
 target_include_directories(${NETTCP_TARGET} PUBLIC $<BUILD_INTERFACE:${NETTCP_INCS_FOLDER}> $<INSTALL_INTERFACE:${NETTCP_INSTALL_PREFIX}>)
