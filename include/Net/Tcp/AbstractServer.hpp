@@ -1,31 +1,20 @@
 #ifndef __NETTCP_ABSTRACT_SERVER_HPP__
 #define __NETTCP_ABSTRACT_SERVER_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-
-// Application Header
+// Library Headers
 #include <Net/Tcp/IServer.hpp>
 
 // Dependencies
 #include <ObjectListModel.hpp>
 
-// Qt
-
-// C++ Header
-
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ AbstractServer : public IServer
 {

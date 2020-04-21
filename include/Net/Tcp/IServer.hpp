@@ -1,32 +1,20 @@
 #ifndef __NETTCP_ISERVER_HPP__
 #define __NETTCP_ISERVER_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/AbstractSocket.hpp>
 
-// Dependencies Header
+// Dependencies Headers
 #include <ObjectListModel.hpp>
 
-// Qt Header
-
-// C++ Header
-//
-// C Header
-
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ IServer : public Olm::ObjectList<AbstractSocket>
 {

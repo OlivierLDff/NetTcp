@@ -1,32 +1,18 @@
 #ifndef __NETTCP_ISOCKET_HPP__
 #define __NETTCP_ISOCKET_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Export.hpp>
 #include <Net/Tcp/Property.hpp>
 
-// Dependencies Header
-
-// Qt Header
-
-// C++ Header
-//
-// C Header
-
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ ISocket : public QObject
 {

@@ -1,18 +1,12 @@
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Server.hpp>
 #include <Net/Tcp/ServerWorker.hpp>
 #include <Net/Tcp/Socket.hpp>
 #include <Net/Tcp/Logger.hpp>
 
-// Qt Header
-
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 using namespace Net::Tcp;
 
@@ -45,9 +39,7 @@ using namespace Net::Tcp;
 #define LOG_WARN(str, ...)       Logger::SERVER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
 #define LOG_ERR(str, ...)        Logger::SERVER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
-// ─────────────────────────────────────────────────────────────
-//                  FUNCTIONS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 Server::Server(QObject* parent): AbstractServer(parent,
     {
@@ -174,7 +166,7 @@ void Server::onItemInserted(AbstractSocket* item, int row)
         {
             if (!connected)
             {
-                LOG_INFO("Client {}:{} disconnected", item->peerAddress().toStdString(), item->peerPort()); 
+                LOG_INFO("Client {}:{} disconnected", item->peerAddress().toStdString(), item->peerPort());
                 disconnect(item, nullptr, this, nullptr);
                 disconnect(this, nullptr, item, nullptr);
                 remove(item);

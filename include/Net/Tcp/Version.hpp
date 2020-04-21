@@ -5,11 +5,11 @@
 //                  INCLUDE
 // ─────────────────────────────────────────────────────────────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Export.hpp>
 #include <Net/Tcp/Property.hpp>
 
-// Qt Header
+// Qt Headers
 #include <QObject>
 
 // ─────────────────────────────────────────────────────────────

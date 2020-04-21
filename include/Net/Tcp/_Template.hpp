@@ -5,16 +5,14 @@
 //                  INCLUDE
 // ─────────────────────────────────────────────────────────────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Export.hpp>
 
-// Dependencies Header
+// Dependencies Headers
 
-// Qt Header
+// Qt Headers
 
-// C++ Header
-//
-// C Header
+// Stl Headers
 
 // ─────────────────────────────────────────────────────────────
 //                  DECLARATION

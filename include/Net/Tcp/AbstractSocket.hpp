@@ -1,36 +1,23 @@
 #ifndef __NETTCP_ABSTRACT_SOCKET_HPP__
 #define __NETTCP_ABSTRACT_SOCKET_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/ISocket.hpp>
 
-// Dependencies Header
-
-// Qt Header
-
-// C++ Header
-//
-// C Header
-
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ AbstractSocket : public ISocket
 {
     Q_OBJECT
     NETTCP_REGISTER_TO_QML(AbstractSocket)
+
     // ──────── CONSTRUCTOR ────────
 public:
     AbstractSocket(QObject* parent = nullptr);

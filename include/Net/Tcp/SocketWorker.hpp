@@ -1,16 +1,12 @@
 #ifndef __NETTCP_SOCKET_WORKER_HPP__
 #define __NETTCP_SOCKET_WORKER_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Export.hpp>
 
-// Dependencies Header
-
-// Qt Header
+// Qt Headers
 #include <QObject>
 #include <QTcpSocket>
 #include <QTimer>
@@ -18,16 +14,12 @@
 // STL Header
 #include <memory>
 
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ SocketWorker : public QObject
 {

@@ -1,14 +1,10 @@
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/AbstractServer.hpp>
 #include <Net/Tcp/Logger.hpp>
 
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 using namespace Net::Tcp;
 
@@ -41,9 +37,7 @@ using namespace Net::Tcp;
 #define LOG_WARN(str, ...)       Logger::SERVER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
 #define LOG_ERR(str, ...)        Logger::SERVER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
-// ─────────────────────────────────────────────────────────────
-//                  FUNCTIONS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 bool AbstractServer::start()
 {

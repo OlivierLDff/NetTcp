@@ -2,14 +2,14 @@
 //                  INCLUDE
 // ─────────────────────────────────────────────────────────────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Utils.hpp>
 #include <Net/Tcp/Server.hpp>
 #include <Net/Tcp/Socket.hpp>
 #include <Net/Tcp/Version.hpp>
 #include <Net/Tcp/Logger.hpp>
 
-// Qt Header
+// Qt Headers
 #include <QCoreApplication>
 #include <QLoggingCategory>
 #include <QAbstractSocket>

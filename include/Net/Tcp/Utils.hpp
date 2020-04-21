@@ -5,10 +5,10 @@
 //                  INCLUDE
 // ─────────────────────────────────────────────────────────────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Export.hpp>
 
-// C++ Header
+// Stl Headers
 #include <QtGlobal>
 
 // ─────────────────────────────────────────────────────────────

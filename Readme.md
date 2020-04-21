@@ -249,21 +249,25 @@ It's possible to react to multiple signals from the `Server`.
 * `void newClient(const QString& address, const quint16 port)` tell when a new client is connected
 * `void clientLost(const QString& address, const quint16 port);` tell when a client got disconnected
 
-### Dependencies
+#### Logger
 
-* The library depends on C++ 14 STL.
-* [ObjectListModel](https://github.com/OlivierLDff/ObjectListModel.git) that make look `Server` like a list of `Socket`.
-* Qt Core and Network for the backend.
-* Qml dependencies:
-  * Qt Qml Quick Control2
-  * [Stringify](https://github.com/OlivierLDff/Stringify)
-  * [Qaterial](https://github.com/OlivierLDff/Qaterial)
+**NetTcp** library use `spdlog` as a logging backend. To listen to logs, you need to install `spdlog::sink`. The `registerSink` function needs to be called before any logs.
 
-### Tools
+```cpp
+// ...
+#include <spdlog/sinks/stdout_color_sinks.h>
+// ... Log NetTcp to stdout
+const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+NetTcp::Logger::registerSink(sink);
+// ...
+```
 
-* [CMake](https://cmake.org/) v3.14 or greater.
-* C++14 compliant compiler or greater.
-* Internet connection to download dependencies from *Github* during configuration.
+`NetTcp` use 4 main category:
+
+* `net.tcp.server` : Log from `Net::Tcp::Server` objects
+* `net.tcp.socket` : Log from `Net::Tcp::Socket` objects
+* `net.tcp.socket.worker` : Log from `Net::Tcp::SocketWorker` objects
+* `net.tcp.utils` : Register type logs
 
 ## Example
 
@@ -328,7 +332,24 @@ Rectangle
 * `NetTcp.Debug.Server` is a `Qaterial.DebugObject`. If you want the raw content to display it somewhere else, then use `NetTcp.Debug.ServerContent` that is a `Column`.
 * `NetTcp.Debug.Socket` is a `Qaterial.DebugObject`. If you want the raw content to display it somewhere else, then use `NetTcp.Debug.SocketContent` that is a `Column`.
 
-## Configuring
+## Build and Run
+
+### Dependencies
+
+* The library depends on C++ 14 STL.
+* [ObjectListModel](https://github.com/OlivierLDff/ObjectListModel.git) that make look `Server` like a list of `Socket`.
+* [spdlog](https://github.com/gabime/spdlog) for logging.
+* Qt Core and Network for the backend.
+* Qml dependencies:
+  * Qt Qml Quick Control2
+  * [Stringify](https://github.com/OlivierLDff/Stringify)
+  * [Qaterial](https://github.com/OlivierLDff/Qaterial)
+
+### Tools
+
+* [CMake](https://cmake.org/) v3.14 or greater.
+* C++14 compliant compiler or greater.
+* Internet connection to download dependencies during configuration.
 
 This library use CMake for configuration.
 
@@ -341,7 +362,7 @@ cmake ..
 
 The `CMakeLists.txt` will download every dependencies for you.
 
-## Building
+### Building
 
 Simply use integrated cmake command:
 
@@ -357,7 +378,23 @@ cmake --build . --target NetTcp_EchoClientServer
 ./NetTcp_EchoClientServer
 ```
 
-## Integrating
+### Additional CMake flags
+
+Since CMake is using `FetchContent` functionality, you can add flags to understand what is going on. The library also require Qt, so you need to indicate where Qt SDK is installed. Provide the path with `CMAKE_PREFIX_PATH`.
+
+```bash
+cmake
+# Log output during download of dependencies
+-DFETCHCONTENT_QUIET=OFF
+# Avoid that dependencies source gets pulled at each cmake command
+# Very useful when developping on dependencies too.
+-DFETCHCONTENT_UPDATES_DISCONNECTED=ON
+# Add path to qt sdk(required if you system qt is lower than Qt 5.12)
+-DCMAKE_PREFIX_PATH=/Path/To/Qt
+..
+```
+
+### Integrating
 
 Adding NetTcp library in your library is really simple if you use CMake 3.14.
 
@@ -378,7 +415,7 @@ FetchContent_MakeAvailable(NetTcp)
 target_link_libraries(MyTarget NetTcp)
 ```
 
-Then you just need to `#include <NetTcp.hpp>`.
+Then you just need to `#include <Net/Tcp/NetTcp.hpp>`.
 
 ## Authors
 

@@ -1,17 +1,13 @@
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/SocketWorker.hpp>
 #include <Net/Tcp/Logger.hpp>
 
-// Qt Header
+// Qt Headers
 #include <QHostAddress>
 
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 using namespace Net::Tcp;
 
@@ -44,9 +40,7 @@ using namespace Net::Tcp;
 #define LOG_WARN(str, ...)       Logger::SOCKET_WORKER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
 #define LOG_ERR(str, ...)        Logger::SOCKET_WORKER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
-// ─────────────────────────────────────────────────────────────
-//                  FUNCTIONS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 SocketWorker::SocketWorker(QObject* parent): QObject(parent)
 {

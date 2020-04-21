@@ -2,12 +2,12 @@
 //                  INCLUDE
 // ─────────────────────────────────────────────────────────────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/_Template.hpp>
 
-// Dependencies Header
+// Dependencies Headers
 
-// Qt Header
+// Qt Headers
 
 // STL Header
 

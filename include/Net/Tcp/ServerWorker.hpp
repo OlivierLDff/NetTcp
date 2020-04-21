@@ -1,26 +1,20 @@
 #ifndef __NETTCP_SERVER_WORKER_HPP__
 #define __NETTCP_SERVER_WORKER_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/Export.hpp>
 
-// Qt Header
+// Qt Headers
 #include <QTcpServer>
 
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ ServerWorker : public QTcpServer
 {

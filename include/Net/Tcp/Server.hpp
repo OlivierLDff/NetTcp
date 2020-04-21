@@ -1,31 +1,25 @@
 #ifndef __NETTCP_SERVER_HPP__
 #define __NETTCP_SERVER_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/AbstractServer.hpp>
 
-// Qt Headers
+// Qt Headerss
 #include <QTimer>
 
-// C++ Header
+// Stl Headers
 #include <memory>
 
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
 class ServerWorker;
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class NETTCP_API_ Server : public AbstractServer
 {

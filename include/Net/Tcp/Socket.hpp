@@ -1,31 +1,25 @@
 #ifndef __NETTCP_SOCKET_HPP__
 #define __NETTCP_SOCKET_HPP__
 
-// ─────────────────────────────────────────────────────────────
-//                  INCLUDE
-// ─────────────────────────────────────────────────────────────
+// ───── INCLUDE ─────
 
-// Application Header
+// Library Headers
 #include <Net/Tcp/AbstractSocket.hpp>
 
-// Qt Headers
+// Qt Headerss
 #include <QThread>
 
-// C++ Header
+// Stl Headers
 #include <memory>
 
-// ─────────────────────────────────────────────────────────────
-//                  DECLARATION
-// ─────────────────────────────────────────────────────────────
+// ───── DECLARATION ─────
 
 namespace Net {
 namespace Tcp {
 
 class SocketWorker;
 
-// ─────────────────────────────────────────────────────────────
-//                  CLASS
-// ─────────────────────────────────────────────────────────────
+// ───── CLASS ─────
 
 class Socket : public AbstractSocket
 {
