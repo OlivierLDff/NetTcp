@@ -6,26 +6,50 @@
 #include <Net/Tcp/Server.hpp>
 #include <Net/Tcp/ServerWorker.hpp>
 #include <Net/Tcp/Socket.hpp>
+#include <Net/Tcp/Logger.hpp>
 
 // Qt Header
-#include <QLoggingCategory>
-#include <QTimer>
-
-// STL Header
 
 // ─────────────────────────────────────────────────────────────
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
-Q_LOGGING_CATEGORY(SERVER_LOG_CAT, "net.tcp.server")
-
 using namespace Net::Tcp;
+
+#ifdef NDEBUG
+# define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
+#else
+# define LOG_DEV_DEBUG(str, ...) Logger::SERVER->debug( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_INFO(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_INFO(str, ...)  Logger::SERVER->info(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_WARN(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_WARN(str, ...)  Logger::SERVER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_ERR(str, ...)   { do {} while (0); }
+#else
+# define LOG_DEV_ERR(str, ...)   Logger::SERVER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#define LOG_DEBUG(str, ...)      Logger::SERVER->debug( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_INFO(str, ...)       Logger::SERVER->info(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_WARN(str, ...)       Logger::SERVER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_ERR(str, ...)        Logger::SERVER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
 // ─────────────────────────────────────────────────────────────
 //                  FUNCTIONS
 // ─────────────────────────────────────────────────────────────
 
-Server::Server(QObject* parent): AbstractServer(parent, 
+Server::Server(QObject* parent): AbstractServer(parent,
     {
         {"address"},
         {"port"},
@@ -89,8 +113,8 @@ bool Server::tryStart()
     stopWatchdog();
     if (!startWorker())
     {
-        qCDebug(SERVER_LOG_CAT, "Error : Fail to start worker, start watchdog to retry in %llu ms. Reason : %s",
-               static_cast<long long unsigned>(watchdogPeriod()), qPrintable(_worker->errorString()));
+        LOG_ERR("Fail to start worker, start watchdog to retry in {} ms. Reason : {}",
+               static_cast<std::uint64_t>(watchdogPeriod()), _worker->errorString().toStdString());
         startWatchdog();
         return false;
     }
@@ -145,11 +169,12 @@ void Server::stopWatchdog()
 void Server::onItemInserted(AbstractSocket* item, int row)
 {
     Q_EMIT newClient(item->peerAddress(), item->peerPort());
+    LOG_INFO("Client {}:{} connected", item->peerAddress().toStdString(), uint16_t(item->peerPort()));
     connect(item, &Socket::isConnectedChanged, [this, item](bool connected)
         {
             if (!connected)
             {
-                qCDebug(SERVER_LOG_CAT, "Client disconnected");
+                LOG_INFO("Client {}:{} disconnected", item->peerAddress().toStdString(), item->peerPort()); 
                 disconnect(item, nullptr, this, nullptr);
                 disconnect(this, nullptr, item, nullptr);
                 remove(item);
@@ -178,30 +203,34 @@ AbstractSocket* Server::newTcpSocket(QObject* parent)
 void Server::onNewIncomingConnection(qintptr handle)
 {
     if (!handle)
+    {
+        LOG_ERR("Incoming connection with invalid handle. This connection is discarded.");
         return;
+    }
+
+    LOG_INFO("Incoming new connection detected");
 
     auto socket = newTcpSocket(this);
     socket->setUseWorkerThread(useWorkerThread());
 
-    qCDebug(SERVER_LOG_CAT, "Connect to new client");
     connect(socket, &Socket::startFailed, [this, socket]()
         {
-            qCDebug(SERVER_LOG_CAT, "Client Start fail : disconnect");
+            LOG_ERR("Client Start fail : disconnect");
             disconnect(socket, nullptr, this, nullptr);
             socket->deleteLater();
         });
     connect(socket, &Socket::startSuccess, [this, socket](const QString& address, const quint16 port)
         {
-            qCDebug(SERVER_LOG_CAT, "Client successful started %s:%d", qPrintable(address), signed(port));
+            LOG_INFO("Client successful started {}:{}", qPrintable(address), signed(port));
             append(socket);
         });
 
     const bool success = socket->start(handle);
     if(!success)
     {
-        qCDebug(SERVER_LOG_CAT, "Error : Fail to handle new socket");
+        LOG_ERR("Fail to handle new socket from handle {}", handle);
         disconnect(socket, nullptr, this, nullptr);
-        socket->deleteLater();        
+        socket->deleteLater();
     }
 }
 

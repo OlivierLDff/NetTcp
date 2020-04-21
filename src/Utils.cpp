@@ -7,6 +7,7 @@
 #include <Net/Tcp/Server.hpp>
 #include <Net/Tcp/Socket.hpp>
 #include <Net/Tcp/Version.hpp>
+#include <Net/Tcp/Logger.hpp>
 
 // Qt Header
 #include <QCoreApplication>
@@ -17,7 +18,34 @@
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
-Q_LOGGING_CATEGORY(NETTCP_UTILS_LOG_CAT, "net.tcp.utils")
+#ifdef NDEBUG
+# define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
+#else
+# define LOG_DEV_DEBUG(str, ...) Net::Tcp::Logger::SOCKET->debug(str, ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_INFO(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_INFO(str, ...)  Net::Tcp::Logger::SOCKET->info( str, ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_WARN(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_WARN(str, ...)  Net::Tcp::Logger::SOCKET->warn( str, ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_ERR(str, ...)   { do {} while (0); }
+#else
+# define LOG_DEV_ERR(str, ...)   Net::Tcp::Logger::SOCKET->error(str, ## __VA_ARGS__);
+#endif
+
+#define LOG_DEBUG(str, ...)      Net::Tcp::Logger::SOCKET->debug(str, ## __VA_ARGS__);
+#define LOG_INFO(str, ...)       Net::Tcp::Logger::SOCKET->info( str, ## __VA_ARGS__);
+#define LOG_WARN(str, ...)       Net::Tcp::Logger::SOCKET->warn( str, ## __VA_ARGS__);
+#define LOG_ERR(str, ...)        Net::Tcp::Logger::SOCKET->error(str, ## __VA_ARGS__);
 
 // ─────────────────────────────────────────────────────────────
 //                  FUNCTIONS
@@ -30,23 +58,24 @@ static quint8 _minor = 0;
 
 static void NetTcp_registerTypes()
 {
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Register NetTcp v%s", qPrintable(Net::Tcp::Version::version().readable()));
+    LOG_DEV_INFO("Register NetTcp v{}", qPrintable(Net::Tcp::Version::version().readable()));
 
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Register Singleton %s.Version %d.%d to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO("Register Singleton {}.Version {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Version::registerSingleton(*_uri, _major, _minor);
 
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Register %s.AbstractServer %d.%d to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO("Register {}.AbstractServer {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::AbstractServer::registerToQml(*_uri, _major, _minor);
 
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Register %s.Server %d.%d to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO("Register {}.Server {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Server::registerToQml(*_uri, _major, _minor);
 
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Register %s.AbstractSocket %d.%d to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO("Register {}.AbstractSocket {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::AbstractSocket::registerToQml(*_uri, _major, _minor);
 
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Register %s.Socket %d.%d to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO("Register {}.Socket {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Socket::registerToQml(*_uri, _major, _minor);
 
+    // todo : remove for our own custom type ?
     qRegisterMetaType<QAbstractSocket::SocketState>();
 }
 
@@ -61,7 +90,7 @@ static void NetTcp_registerTypes(const char* uri, const quint8 major, const quin
 
 void NetTcp_loadResources()
 {
-    qCDebug(NETTCP_UTILS_LOG_CAT, "Load NetTcp.qrc v%s", qPrintable(Net::Tcp::Version::version().readable()));
+    LOG_DEV_INFO("Load NetTcp.qrc v{}", qPrintable(Net::Tcp::Version::version().readable()));
     Q_INIT_RESOURCE(NetTcp);
 }
 

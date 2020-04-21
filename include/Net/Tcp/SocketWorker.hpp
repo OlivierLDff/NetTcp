@@ -13,7 +13,7 @@
 // Qt Header
 #include <QObject>
 #include <QTcpSocket>
-class QTimer;
+#include <QTimer>
 
 // STL Header
 #include <memory>

@@ -5,28 +5,48 @@
 // Application Header
 #include <Net/Tcp/Socket.hpp>
 #include <Net/Tcp/SocketWorker.hpp>
-
-// Dependencies Header
-
-// Qt Header
-#include <QLoggingCategory>
-#include <QThread>
-
-// STL Header
+#include <Net/Tcp/Logger.hpp>
 
 // ─────────────────────────────────────────────────────────────
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
-Q_LOGGING_CATEGORY(SOCKET_LOG_CAT, "net.tcp.socket")
-
 using namespace Net::Tcp;
+
+#ifdef NDEBUG
+# define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
+#else
+# define LOG_DEV_DEBUG(str, ...) Logger::SOCKET->debug( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_INFO(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_INFO(str, ...)  Logger::SOCKET->info(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_WARN(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_WARN(str, ...)  Logger::SOCKET->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_ERR(str, ...)   { do {} while (0); }
+#else
+# define LOG_DEV_ERR(str, ...)   Logger::SOCKET->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#define LOG_DEBUG(str, ...)      Logger::SOCKET->debug( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_INFO(str, ...)       Logger::SOCKET->info(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_WARN(str, ...)       Logger::SOCKET->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_ERR(str, ...)        Logger::SOCKET->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
 // ─────────────────────────────────────────────────────────────
 //                  FUNCTIONS
 // ─────────────────────────────────────────────────────────────
 
-Socket::Socket(QObject* parent): AbstractSocket(parent), _impl(std::make_unique<SocketImpl>(this))
+Socket::Socket(QObject* parent): AbstractSocket(parent)
 {
 }
 
@@ -41,9 +61,13 @@ bool Socket::start()
         return false;
 
     if (socketDescriptor())
-        qCDebug(SOCKET_LOG_CAT, "Start tcp socket via socketDescriptor %d", signed(socketDescriptor()));
+    {
+        LOG_INFO("Start tcp socket via socketDescriptor {}", signed(socketDescriptor()));
+    }
     else
-        qCDebug(SOCKET_LOG_CAT, "Start tcp socket to %s : %d", qPrintable(peerAddress()), signed(peerPort()));
+    {
+        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()), signed(peerPort()));
+    }
 
     Q_ASSERT(_worker.get() == nullptr);
     Q_ASSERT(_workerThread.get() == nullptr);
@@ -84,14 +108,15 @@ bool Socket::start()
     connect(_worker.get(), &SocketWorker::socketError, this, &Socket::socketError);
     connect(_worker.get(), &SocketWorker::bytesReceived, this, &Socket::onBytesReceived);
     connect(_worker.get(), &SocketWorker::bytesSent, this, &Socket::onBytesSent);
-    connect(_impl.get(), &SocketImpl::startWorker, _worker.get(), &SocketWorker::onStart);
-    connect(_impl.get(), &SocketImpl::stopWorker, _worker.get(), &SocketWorker::onStop);
+    connect(this, &Socket::startWorker, _worker.get(), &SocketWorker::onStart);
+    connect(this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop);
     connect(this, &Socket::watchdogPeriodChanged, _worker.get(), &SocketWorker::onWatchdogPeriodChanged);
 
     if(_workerThread)
         _workerThread->start();
 
-    Q_EMIT _impl->startWorker();
+    LOG_INFO("Start worker");
+    Q_EMIT startWorker();
 
     return true;
 }
@@ -110,7 +135,8 @@ bool Socket::stop()
 {
     AbstractSocket::stop();
 
-    Q_EMIT _impl->stopWorker();
+    LOG_INFO("Stop worker");
+    Q_EMIT stopWorker();
     killWorker();
 
     return true;
@@ -120,6 +146,7 @@ void Socket::killWorker()
 {
     if (_workerThread)
     {
+        LOG_INFO("Kill Worker thread and worker");
         _workerThread->exit();
         _workerThread->wait();
         _workerThread = nullptr;
@@ -127,10 +154,10 @@ void Socket::killWorker()
     }
     else if (_worker)
     {
+        LOG_INFO("Kill Worker");
         const auto workerPtr = _worker.release();
         disconnect(workerPtr, nullptr, this, nullptr);
         disconnect(this, nullptr, workerPtr, nullptr);
-        disconnect(_impl.get(), nullptr, workerPtr, nullptr);
         workerPtr->deleteLater();
     }
 }

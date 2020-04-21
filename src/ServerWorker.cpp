@@ -5,12 +5,6 @@
 // Application Header
 #include <Net/Tcp/ServerWorker.hpp>
 
-// Dependencies Header
-
-// Qt Header
-
-// STL Header
-
 // ─────────────────────────────────────────────────────────────
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────

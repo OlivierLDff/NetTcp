@@ -8,7 +8,8 @@
 // Application Header
 #include <Net/Tcp/AbstractSocket.hpp>
 
-class QThread;
+// Qt Headers
+#include <QThread>
 
 // C++ Header
 #include <memory>
@@ -26,19 +27,6 @@ class SocketWorker;
 //                  CLASS
 // ─────────────────────────────────────────────────────────────
 
-class SocketImpl : public QObject
-{
-    Q_OBJECT
-    // ──────── CONSTRUCTOR ────────
-public:
-    SocketImpl(QObject* parent = nullptr) : QObject(parent) {}
-
-    // ──────── COMMUNICATION ────────
-Q_SIGNALS:
-    void startWorker();
-    void stopWorker();    
-};
-
 class Socket : public AbstractSocket
 {
     Q_OBJECT
@@ -51,7 +39,6 @@ public:
 
     // ──────── WORKER ────────
 private:
-    std::unique_ptr<SocketImpl> _impl;
     std::unique_ptr<SocketWorker> _worker;
     std::unique_ptr<QThread> _workerThread;
 
@@ -68,6 +55,10 @@ private Q_SLOTS:
     void onStartFail();
     void onBytesReceived(const uint64_t count);
     void onBytesSent(const uint64_t count);
+
+Q_SIGNALS:
+    void startWorker();
+    void stopWorker();
 
     // ──────── CUSTOM WORKER API ────────
 protected:

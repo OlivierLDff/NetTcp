@@ -279,6 +279,10 @@ Options:
   -i, --ip <ip>     Ip address of multicast group. Default "127.0.0.1"
 ```
 
+You can also check `NetTcp_EchoServer` that implement only the server code that reply echo to client that will connect. 
+
+And check `NetTcp_EchoClient`, example of a client that will connect to a server and send a string.
+
 ## Qml Debug
 
 This library also provide a tool object that demonstrate every Qmls functionality. This is intended for quick debug, or test functionalities if UI isn't built yet.

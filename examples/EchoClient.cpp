@@ -3,7 +3,7 @@
 //                  INCLUDE
 // ─────────────────────────────────────────────────────────────
 
-#include <MyServer.hpp>
+#include <MySocket.hpp>
 
 // Dependencies
 #include <Net/Tcp/NetTcp.hpp>
@@ -23,7 +23,6 @@
 // ─────────────────────────────────────────────────────────────
 
 std::shared_ptr<spdlog::logger> appLog = std::make_shared<spdlog::logger>("app");
-std::shared_ptr<spdlog::logger> serverLog = std::make_shared<spdlog::logger>("server");
 std::shared_ptr<spdlog::logger> clientLog = std::make_shared<spdlog::logger>("client");
 
 class App
@@ -33,8 +32,6 @@ public:
 
     uint16_t port = 9999;
     QString ip = QStringLiteral("127.0.0.1");
-
-    MyServer server;
     MySocket client;
 
     bool multiThreaded = false;
@@ -46,15 +43,13 @@ public:
     {
         appLog->info("Init application");
 
-        server.multiThreaded = multiThreaded;
-
         // Send Echo counter every seconds
         QObject::connect(&timer, &QTimer::timeout,
             [this]()
             {
-                if (client.isConnected())
+                if(client.isConnected())
                 {
-                    Q_EMIT client.sendString("Echo " + QString::number(counter++));
+                    Q_EMIT client.sendString("Echo " + QString::number(counter++));                
                 }
             }
         );
@@ -63,26 +58,6 @@ public:
             [this](const QString value)
             {
                 clientLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(client.peerAddress()), signed(client.peerPort()));
-            }
-        );
-        // Print the message that received from client socket
-        QObject::connect(&server, &MyServer::stringReceived,
-            [](const QString value, const QString address, const quint16 port)
-            {
-                serverLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(address), port);
-            }
-        );
-
-        QObject::connect(&server, &Net::Tcp::Server::isRunningChanged,
-            [](bool value)
-            {
-                serverLog->info("isRunning : {}", value);
-            }
-        );
-        QObject::connect(&server, &Net::Tcp::Server::isListeningChanged,
-            [](bool value)
-            {
-                serverLog->info("isBounded : {}", value);
             }
         );
         QObject::connect(&client, &Net::Tcp::Socket::isRunningChanged,
@@ -99,28 +74,10 @@ public:
                 counter = 0;
             }
         );
-        QObject::connect(&server, &Net::Tcp::Server::acceptError,
-            [](int value, const QString& error)
-            {
-                serverLog->error("accept error : {}", error.toStdString());
-            }
-        );
         QObject::connect(&client, &Net::Tcp::Socket::socketError,
             [](int value, const QString& error)
             {
                 clientLog->error("socket error : {}", error.toStdString());
-            }
-        );
-        QObject::connect(&server, &Net::Tcp::Server::newClient,
-            [](const QString& address, const quint16 port)
-            {
-                serverLog->info("New Client {}:{}", qPrintable(address), signed(port));
-            }
-        );
-        QObject::connect(&server, &Net::Tcp::Server::clientLost,
-            [](const QString& address, const quint16 port)
-            {
-                serverLog->info("Client Disconnected {}:{}", qPrintable(address), signed(port));
             }
         );
         QObject::connect(&client, &Net::Tcp::Socket::txBytesTotalChanged,
@@ -129,10 +86,6 @@ public:
                 clientLog->info("Sent bytes : {}", total);
             }
         );
-
-        serverLog->info("Start server on address {}:{}", qPrintable(ip), signed(port));
-        // server.start(port) can be called to listen from every interfaces
-        server.start(ip, port);
 
         client.setUseWorkerThread(multiThreaded);
         clientLog->info("Start client to connect to address {}, on port {}", qPrintable(ip), signed(port));
@@ -151,7 +104,6 @@ static void installLoggers()
     Net::Tcp::Logger::registerSink(msvcSink);
     appLog->sinks().emplace_back(msvcSink);
     clientLog->sinks().emplace_back(msvcSink);
-    serverLog->sinks().emplace_back(msvcSink);
 #endif
 
     const auto stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -159,13 +111,12 @@ static void installLoggers()
     Net::Tcp::Logger::registerSink(stdoutSink);
     appLog->sinks().emplace_back(stdoutSink);
     clientLog->sinks().emplace_back(stdoutSink);
-    serverLog->sinks().emplace_back(stdoutSink);
 }
 
 int main(int argc, char* argv[])
 {
     installLoggers();
-    
+
     QCoreApplication app(argc, argv);
 
     // ────────── COMMAND PARSER ──────────────────────────────────────

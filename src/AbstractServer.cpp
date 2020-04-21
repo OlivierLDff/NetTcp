@@ -4,21 +4,42 @@
 
 // Application Header
 #include <Net/Tcp/AbstractServer.hpp>
-
-// Dependencies Header
-
-// Qt Header
-#include <QLoggingCategory>
-
-// STL Header
+#include <Net/Tcp/Logger.hpp>
 
 // ─────────────────────────────────────────────────────────────
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
-Q_LOGGING_CATEGORY(ABSTRACT_SERVER_LOG_CAT, "net.tcp.abstractServer")
-
 using namespace Net::Tcp;
+
+#ifdef NDEBUG
+# define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
+#else
+# define LOG_DEV_DEBUG(str, ...) Logger::SERVER->debug( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_INFO(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_INFO(str, ...)  Logger::SERVER->info(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_WARN(str, ...)  { do {} while (0); }
+#else
+# define LOG_DEV_WARN(str, ...)  Logger::SERVER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#ifdef NDEBUG
+# define LOG_DEV_ERR(str, ...)   { do {} while (0); }
+#else
+# define LOG_DEV_ERR(str, ...)   Logger::SERVER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#endif
+
+#define LOG_DEBUG(str, ...)      Logger::SERVER->debug( "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_INFO(str, ...)       Logger::SERVER->info(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_WARN(str, ...)       Logger::SERVER->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
+#define LOG_ERR(str, ...)        Logger::SERVER->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
 // ─────────────────────────────────────────────────────────────
 //                  FUNCTIONS
@@ -28,10 +49,10 @@ bool AbstractServer::start()
 {
     if (isRunning())
     {
-        qCDebug(ABSTRACT_SERVER_LOG_CAT, "Error : Fail to start tcp server that is already running");
+        LOG_DEV_ERR("Fail to start tcp server that is already running");
         return false;
     }
-    qCDebug(ABSTRACT_SERVER_LOG_CAT, "Start tcp server");
+    LOG_INFO("Start Server");
 
     setRunning(true);
     return true;

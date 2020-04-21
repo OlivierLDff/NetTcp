@@ -8,7 +8,8 @@
 // Application Header
 #include <Net/Tcp/AbstractServer.hpp>
 
-class QTimer;
+// Qt Headers
+#include <QTimer>
 
 // C++ Header
 #include <memory>

@@ -8,6 +8,7 @@
 // Private Utils
 #include <Net/Tcp/Version.hpp>
 #include <Net/Tcp/Utils.hpp>
+#include <Net/Tcp/Logger.hpp>
 
 // Library code
 #include <Net/Tcp/Server.hpp>
