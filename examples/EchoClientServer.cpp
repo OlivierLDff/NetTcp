@@ -4,13 +4,13 @@
 // ─────────────────────────────────────────────────────────────
 
 // Dependencies
-#include <NetTcp.hpp>
+#include <Net/Tcp/NetTcp.hpp>
 
 // Qt
-#include <QCoreApplication>
 #include <QLoggingCategory>
 #include <QCommandLineParser>
 #include <QTimer>
+#include <QCoreApplication>
 #include <QNetworkInterface>
 
 // ─────────────────────────────────────────────────────────────

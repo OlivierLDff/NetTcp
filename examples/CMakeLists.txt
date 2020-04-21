@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+
+set(NETTCP_EXAMPLE1_TARGET ${NETTCP_TARGET}_EchoClientServer)
+message(STATUS "Add Example ${NETTCP_EXAMPLE1_TARGET}")
+add_executable(${NETTCP_EXAMPLE1_TARGET} "${CMAKE_CURRENT_SOURCE_DIR}/EchoClientServer.cpp")
+target_link_libraries(${NETTCP_EXAMPLE1_TARGET} ${NETTCP_TARGET})
+set_target_properties(${NETTCP_EXAMPLE1_TARGET} PROPERTIES AUTOMOC TRUE)
+set_target_properties(${NETTCP_EXAMPLE1_TARGET} PROPERTIES FOLDER "${NETTCP_FOLDER_PREFIX}/Examples")
