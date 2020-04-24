@@ -224,7 +224,7 @@ target_compile_features(${NETTCP_TARGET} PUBLIC cxx_std_14)
 target_include_directories(${NETTCP_TARGET} PUBLIC $<BUILD_INTERFACE:${NETTCP_INCS_FOLDER}> $<INSTALL_INTERFACE:${NETTCP_INSTALL_PREFIX}>)
 
 # Link libraries
-target_link_libraries(${NETTCP_TARGET} spdlog QOlm)
+target_link_libraries(${NETTCP_TARGET} PUBLIC spdlog QOlm)
 
 set_target_properties(${NETTCP_TARGET} PROPERTIES AUTOMOC TRUE)
 if(NETTCP_ENABLE_QML)
@@ -232,7 +232,7 @@ if(NETTCP_ENABLE_QML)
 endif()
 # NETTCP_ENABLE_QML
 
-target_link_libraries(${NETTCP_TARGET}
+target_link_libraries(${NETTCP_TARGET} PUBLIC
   Qt5::Core
   Qt5::Qml
   Qt5::Network
