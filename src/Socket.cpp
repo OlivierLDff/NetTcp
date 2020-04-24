@@ -5,6 +5,9 @@
 #include <Net/Tcp/SocketWorker.hpp>
 #include <Net/Tcp/Logger.hpp>
 
+// Qt Headers
+#include <QThread>
+
 // ───── DECLARATION ─────
 
 using namespace Net::Tcp;

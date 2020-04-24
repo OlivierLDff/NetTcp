@@ -12,8 +12,8 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # DEPENDENCIES
 
-set(OBJLISTMODEL_REPOSITORY "https://github.com/OlivierLDff/ObjectListModel" CACHE STRING "Repository of ObjectListModel")
-set(OBJLISTMODEL_TAG "master" CACHE STRING "Git tag/branch of ObjectListModel")
+set(QOLM_REPOSITORY "https://github.com/OlivierLDff/QOlm" CACHE STRING "Repository of QOlm")
+set(QOLM_TAG "master" CACHE STRING "Git tag/branch of QOlm")
 
 set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog" CACHE STRING "Repository of spdlog")
 set(SPDLOG_TAG "v1.x" CACHE STRING "Git tag/branch of spdlog")
@@ -100,11 +100,11 @@ endif()
 
 include(FetchContent)
 
-# ObjectListModel
+# QOlm
 FetchContent_Declare(
-  ObjectListModel
-  GIT_REPOSITORY ${OBJLISTMODEL_REPOSITORY}
-  GIT_TAG        ${OBJLISTMODEL_TAG}
+  QOlm
+  GIT_REPOSITORY ${QOLM_REPOSITORY}
+  GIT_TAG        ${QOLM_TAG}
   )
 
 FetchContent_Declare(
@@ -114,7 +114,7 @@ FetchContent_Declare(
   )
 
 # Make all dependencies avaiables
-FetchContent_MakeAvailable(spdlog ObjectListModel)
+FetchContent_MakeAvailable(spdlog QOlm)
 
 # ┌──────────────────────────────────────────────────────────────────┐
 # │                          NETTCP                                  │
@@ -224,7 +224,7 @@ target_compile_features(${NETTCP_TARGET} PUBLIC cxx_std_14)
 target_include_directories(${NETTCP_TARGET} PUBLIC $<BUILD_INTERFACE:${NETTCP_INCS_FOLDER}> $<INSTALL_INTERFACE:${NETTCP_INSTALL_PREFIX}>)
 
 # Link libraries
-target_link_libraries(${NETTCP_TARGET} spdlog ObjectListModel)
+target_link_libraries(${NETTCP_TARGET} spdlog QOlm)
 
 set_target_properties(${NETTCP_TARGET} PROPERTIES AUTOMOC TRUE)
 if(NETTCP_ENABLE_QML)

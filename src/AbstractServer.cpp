@@ -82,24 +82,24 @@ bool AbstractServer::restart()
     return false;
 }
 
-AbstractSocket* AbstractServer::getSocket(const QString& address, const quint16 port)
+Socket* AbstractServer::getSocket(const QString& address, const quint16 port)
 {
-    for(const auto it : *this)
+    for(const auto socket : *this)
     {
-        if (address == it->peerAddress() &&
-            port == it->peerPort())
-            return it;
+        if (address == socket->peerAddress() &&
+            port == socket->peerPort())
+            return socket;
     }
     return nullptr;
 }
 
-QList<AbstractSocket*> AbstractServer::getSocket(const QString& address)
+QList<Socket*> AbstractServer::getSockets(const QString& address)
 {
-    QList<AbstractSocket*> l;
-    for (const auto it : *this)
+    QList<Socket*> l;
+    for (const auto socket : *this)
     {
-        if (address == it->peerAddress())
-            l.append(it);
+        if (address == socket->peerAddress())
+            l.append(socket);
     }
     return l;
 }

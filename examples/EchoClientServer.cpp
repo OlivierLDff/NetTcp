@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────
 
 #include <MyServer.hpp>
+#include <MySocket.hpp>
 
 // Dependencies
 #include <Net/Tcp/NetTcp.hpp>

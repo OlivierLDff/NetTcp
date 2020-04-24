@@ -4,10 +4,10 @@
 // ───── INCLUDE ─────
 
 // Library Headers
-#include <Net/Tcp/AbstractSocket.hpp>
+#include <Net/Tcp/Socket.hpp>
 
 // Dependencies Headers
-#include <ObjectListModel.hpp>
+#include <QOlm/QOlm.hpp>
 
 // ───── DECLARATION ─────
 
@@ -16,16 +16,19 @@ namespace Tcp {
 
 // ───── CLASS ─────
 
-class NETTCP_API_ IServer : public Olm::ObjectList<AbstractSocket>
+/** Interface Server class that define API and basic property */
+class NETTCP_API_ IServer : public QOlm::QOlm<Socket>
 {
     Q_OBJECT
+
     // ──────── CONSTRUCTOR ────────
 public:
     IServer(QObject* parent = nullptr,
         const QList<QByteArray> & exposedRoles = {},
-        const QByteArray & displayRole = {},
-        const QByteArray& uidRole = {}) :
-    Olm::ObjectList<AbstractSocket>(parent, exposedRoles, displayRole, uidRole) {}
+        const QByteArray & displayRole = {}) :
+        QOlm<Socket>(parent, exposedRoles, displayRole)
+    {
+    }
 
     // ──────── ATTRIBUTES ────────
 protected:
@@ -44,8 +47,8 @@ public Q_SLOTS:
     virtual bool stop() = 0;
     virtual bool restart() = 0;
 
-    virtual AbstractSocket* getSocket(const QString& address, const quint16 port) = 0;
-    virtual QList<AbstractSocket*> getSocket(const QString& address) = 0;
+    virtual Socket* getSocket(const QString& address, const quint16 port) = 0;
+    virtual QList<Socket*> getSockets(const QString& address) = 0;
     virtual void disconnectFrom(const QString& address, const quint16 port) = 0;
 
     // ──────── SIGNALS ────────

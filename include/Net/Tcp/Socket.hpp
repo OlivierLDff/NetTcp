@@ -6,13 +6,12 @@
 // Library Headers
 #include <Net/Tcp/AbstractSocket.hpp>
 
-// Qt Headerss
-#include <QThread>
-
 // Stl Headers
 #include <memory>
 
 // ───── DECLARATION ─────
+
+class QThread;
 
 namespace Net {
 namespace Tcp {

@@ -6,13 +6,12 @@
 // Library Headers
 #include <Net/Tcp/AbstractServer.hpp>
 
-// Qt Headerss
-#include <QTimer>
-
 // Stl Headers
 #include <memory>
 
 // ───── DECLARATION ─────
+
+class QTimer;
 
 namespace Net {
 namespace Tcp {
@@ -40,14 +39,14 @@ public:
 
     // ──────── C++ API ────────
 public Q_SLOTS:
-    bool start() override;
-    bool start(const quint16 port) override;
-    bool start(const QString& address, const quint16 port) override;
-    bool stop() override;
+    bool start() override final;
+    bool start(const quint16 port) override final;
+    bool start(const QString& address, const quint16 port) override final;
+    bool stop() override final;
 
     // ──────── CUSTOM SOCKET API ────────
-protected Q_SLOTS:
-    virtual class AbstractSocket* newTcpSocket(QObject* parent);
+protected:
+    virtual class Socket* newSocket(QObject* parent);
 
     // ──────── PRIVATE ────────
 private:
@@ -58,16 +57,9 @@ private:
     void startWatchdog();
     void stopWatchdog();
 
-protected:
-    void onItemInserted(AbstractSocket* item, int row) override;
-    void onItemAboutToBeRemoved(AbstractSocket* item, int row) override;
 private:
     std::unique_ptr<ServerWorker> _worker;
     std::unique_ptr<QTimer> _watchdog;
-
-private Q_SLOTS:
-    void onWatchdogTimeout();
-    void onNewIncomingConnection(qintptr handle);
 };
 
 }

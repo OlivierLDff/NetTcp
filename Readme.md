@@ -6,7 +6,7 @@ A `Socket` can also be used on client side to connect to a remote server.
 
 ## Overview
 
-![ClassDiagram](./doc/ClassDiagram.svg)
+![ClassDiagram](./docs/ClassDiagram.svg)
 
 ### Introduction
 
@@ -22,7 +22,7 @@ Most of the time when using TCP, a custom packet protocol needs to be implemente
 
 First byte will be header, and will indicate the length of the string. Maximum string length is 128. The string will follow. Data stream will look like that:
 
-![DataStream.svg](./doc/DataStream.svg)
+![DataStream.svg](./docs/DataStream.svg)
 
 The header + payload stream structure is the most efficient way to transmit data because depending on the protocol (if packet size is known, or packet size have a limit), one or two read is only necessary to retrieve a full packet.
 
@@ -93,7 +93,7 @@ protected Q_SLOTS:
     {
         Net::Tcp::SocketWorker::onConnected();
         waitingForData = false;
-        bufferLength = 0;        
+        bufferLength = 0;
     }
     void onDataAvailable() override final
     {
@@ -283,7 +283,7 @@ Options:
   -i, --ip <ip>     Ip address of multicast group. Default "127.0.0.1"
 ```
 
-You can also check `NetTcp_EchoServer` that implement only the server code that reply echo to client that will connect. 
+You can also check `NetTcp_EchoServer` that implement only the server code that reply echo to client that will connect.
 
 And check `NetTcp_EchoClient`, example of a client that will connect to a server and send a string.
 
@@ -291,7 +291,7 @@ And check `NetTcp_EchoClient`, example of a client that will connect to a server
 
 This library also provide a tool object that demonstrate every Qmls functionality. This is intended for quick debug, or test functionalities if UI isn't built yet.
 
-![Qml](./doc/Qml.png)
+![Qml](./docs/Qml.png)
 
 In order to use this qml object into another qml file, multiple steps are required.
 
@@ -308,10 +308,10 @@ Rectangle
 {
     property NetTcp.Server server
     property NetTcp.Socket client
-    
+
     width: 300
     height: 300
-    
+
     Column
     {
         width: parent.width

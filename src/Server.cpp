@@ -6,6 +6,9 @@
 #include <Net/Tcp/Socket.hpp>
 #include <Net/Tcp/Logger.hpp>
 
+// Qt Headers
+#include <QTimer>
+
 // ───── DECLARATION ─────
 
 using namespace Net::Tcp;
@@ -43,20 +46,87 @@ using namespace Net::Tcp;
 
 Server::Server(QObject* parent): AbstractServer(parent,
     {
-        {"address"},
-        {"port"},
-        {"peerAddress"},
-        {"peerPort"}
+        "address",
+        "port",
+        "peerAddress",
+        "peerPort"
     }),
     _worker(std::make_unique<ServerWorker>())
 {
-    connect(_worker.get(), &ServerWorker::newIncomingConnection, this, &Server::onNewIncomingConnection);
-    connect(_worker.get(), &ServerWorker::acceptError, [this](int error)
-    {
+    connect(_worker.get(), &ServerWorker::newIncomingConnection, this,
+        [this](qintptr handle)
+        {
+            if (!handle)
+            {
+                LOG_ERR("Incoming connection with invalid handle. This connection is discarded.");
+                return;
+            }
+
+            LOG_INFO("Incoming new connection detected");
+
+            auto socket = newSocket(this);
+            socket->setUseWorkerThread(useWorkerThread());
+
+            connect(socket, &Socket::startFailed, this,
+                [this, socket]()
+                {
+                    LOG_ERR("Client Start fail : disconnect");
+                    disconnect(socket, nullptr, this, nullptr);
+                    socket->deleteLater();
+                }
+            );
+            connect(socket, &Socket::startSuccess, this,
+                [this, socket](const QString& address, const quint16 port)
+                {
+                    LOG_INFO("Client successful started {}:{}", qPrintable(address), signed(port));
+                    append(socket);
+                }
+            );
+
+            const bool success = socket->start(handle);
+            if (!success)
+            {
+                LOG_ERR("Fail to handle new socket from handle {}", handle);
+                disconnect(socket, nullptr, this, nullptr);
+                socket->deleteLater();
+            }
+        }
+    );
+
+    connect(_worker.get(), &ServerWorker::acceptError, this,
+        [this](int error)
+        {
+            // todo : Use our own enum exposed to qml
             Q_EMIT acceptError(error, _worker->errorString());
-    });
+        }
+    );
+
+    onInserted([this](const InsertedCallbackArgs& socket)
+        {
+            Q_EMIT newClient(socket->peerAddress(), socket->peerPort());
+            LOG_INFO("Client {}:{} connected", socket->peerAddress().toStdString(), uint16_t(socket->peerPort()));
+            connect(socket, &Socket::isConnectedChanged, socket, [this, socket](bool connected)
+                {
+                    if (!connected)
+                    {
+                        LOG_INFO("Client {}:{} disconnected", socket->peerAddress().toStdString(), socket->peerPort());
+                        disconnect(socket, nullptr, this, nullptr);
+                        disconnect(this, nullptr, socket, nullptr);
+                        remove(socket);
+                    }
+                }
+            );
+        }
+    );
+
+    onRemoved([this](const RemovedCallbackArgs& socket)
+        {
+            Q_EMIT clientLost(socket->peerAddress(), socket->peerPort());
+        }
+    );
 }
 
+// Defined here to avoid #include <QTimer> and <ServerWorker>
 Server::~Server() = default;
 
 bool Server::setWatchdogPeriod(const quint64& value)
@@ -147,8 +217,21 @@ void Server::startWatchdog()
     if (!_watchdog)
     {
         _watchdog = std::make_unique<QTimer>();
-        connect(_watchdog.get(), &QTimer::timeout, this, &Server::onWatchdogTimeout);
+        connect(_watchdog.get(), &QTimer::timeout, this,
+            [this]()
+            {
+                // Watchdog shouldn't be started is worker is listening with success
+                Q_ASSERT(!_worker->isListening());
+                // Try to restart the server, or start watchdog
+                tryStart();
+            }, Qt::QueuedConnection
+        );
         _watchdog->setTimerType(Qt::VeryCoarseTimer);
+        LOG_INFO("Try restart server in {} ms", watchdogPeriod());
+    }
+    else
+    {
+        LOG_INFO("Try restart server remaining {} ms", _watchdog->remainingTime());
     }
     _watchdog->start(watchdogPeriod());
 }
@@ -158,72 +241,9 @@ void Server::stopWatchdog()
     _watchdog = nullptr;
 }
 
-void Server::onItemInserted(AbstractSocket* item, int row)
+Socket* Server::newSocket(QObject* parent)
 {
-    Q_EMIT newClient(item->peerAddress(), item->peerPort());
-    LOG_INFO("Client {}:{} connected", item->peerAddress().toStdString(), uint16_t(item->peerPort()));
-    connect(item, &Socket::isConnectedChanged, [this, item](bool connected)
-        {
-            if (!connected)
-            {
-                LOG_INFO("Client {}:{} disconnected", item->peerAddress().toStdString(), item->peerPort());
-                disconnect(item, nullptr, this, nullptr);
-                disconnect(this, nullptr, item, nullptr);
-                remove(item);
-            }
-        });
-}
-
-void Server::onItemAboutToBeRemoved(AbstractSocket* item, int row)
-{
-    Q_EMIT clientLost(item->peerAddress(), item->peerPort());
-}
-
-void Server::onWatchdogTimeout()
-{
-    // Watchdog shouldn't be started is worker is listening with success
-    Q_ASSERT(!_worker->isListening());
-    // Try to restart the server, or start watchdog
-    tryStart();
-}
-
-AbstractSocket* Server::newTcpSocket(QObject* parent)
-{
-    return new Socket(this);
-}
-
-void Server::onNewIncomingConnection(qintptr handle)
-{
-    if (!handle)
-    {
-        LOG_ERR("Incoming connection with invalid handle. This connection is discarded.");
-        return;
-    }
-
-    LOG_INFO("Incoming new connection detected");
-
-    auto socket = newTcpSocket(this);
-    socket->setUseWorkerThread(useWorkerThread());
-
-    connect(socket, &Socket::startFailed, [this, socket]()
-        {
-            LOG_ERR("Client Start fail : disconnect");
-            disconnect(socket, nullptr, this, nullptr);
-            socket->deleteLater();
-        });
-    connect(socket, &Socket::startSuccess, [this, socket](const QString& address, const quint16 port)
-        {
-            LOG_INFO("Client successful started {}:{}", qPrintable(address), signed(port));
-            append(socket);
-        });
-
-    const bool success = socket->start(handle);
-    if(!success)
-    {
-        LOG_ERR("Fail to handle new socket from handle {}", handle);
-        disconnect(socket, nullptr, this, nullptr);
-        socket->deleteLater();
-    }
+    return new Socket(parent);
 }
 
 bool Server::start()

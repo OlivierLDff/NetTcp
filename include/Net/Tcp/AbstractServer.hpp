@@ -6,9 +6,6 @@
 // Library Headers
 #include <Net/Tcp/IServer.hpp>
 
-// Dependencies
-#include <ObjectListModel.hpp>
-
 // ───── DECLARATION ─────
 
 namespace Net {
@@ -25,9 +22,8 @@ class NETTCP_API_ AbstractServer : public IServer
 public:
     AbstractServer(QObject* parent = nullptr,
         const QList<QByteArray> & exposedRoles = {},
-        const QByteArray & displayRole = {},
-        const QByteArray& uidRole = {}) :
-    IServer(parent, exposedRoles, displayRole, uidRole) {}
+        const QByteArray & displayRole = {}) :
+    IServer(parent, exposedRoles, displayRole) {}
 
     // ──────── C++ API ────────
 public Q_SLOTS:
@@ -37,9 +33,9 @@ public Q_SLOTS:
     bool stop() override;
     bool restart() override;
 
-    AbstractSocket* getSocket(const QString& address, const quint16 port) override;
-    QList<AbstractSocket*> getSocket(const QString& address) override;
-    void disconnectFrom(const QString& address, const quint16 port) override;
+    Socket* getSocket(const QString& address, const quint16 port) override final;
+    QList<Socket*> getSockets(const QString& address) override final;
+    void disconnectFrom(const QString& address, const quint16 port) override final;
 };
 
 }
