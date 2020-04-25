@@ -258,7 +258,7 @@ It's possible to react to multiple signals from the `Server`.
 #include <spdlog/sinks/stdout_color_sinks.h>
 // ... Log NetTcp to stdout
 const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-NetTcp::Logger::registerSink(sink);
+Net::Tcp::Logger::registerSink(sink);
 // ...
 ```
 
