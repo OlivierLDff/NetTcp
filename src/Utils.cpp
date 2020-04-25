@@ -63,19 +63,13 @@ static void NetTcp_registerTypes()
     LOG_DEV_INFO("Register Singleton {}.Version {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Version::registerSingleton(*_uri, _major, _minor);
 
-    LOG_DEV_INFO("Register {}.AbstractServer {}.{} to QML", *_uri, _major, _minor);
-    Net::Tcp::AbstractServer::registerToQml(*_uri, _major, _minor);
-
     LOG_DEV_INFO("Register {}.Server {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Server::registerToQml(*_uri, _major, _minor);
-
-    LOG_DEV_INFO("Register {}.AbstractSocket {}.{} to QML", *_uri, _major, _minor);
-    Net::Tcp::AbstractSocket::registerToQml(*_uri, _major, _minor);
 
     LOG_DEV_INFO("Register {}.Socket {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Socket::registerToQml(*_uri, _major, _minor);
 
-    // todo : remove for our own custom type ?
+    // Mandatory to listen to socket error since this type isn't registered by Qt
     qRegisterMetaType<QAbstractSocket::SocketState>();
 }
 

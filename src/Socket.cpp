@@ -43,7 +43,7 @@ using namespace Net::Tcp;
 
 // ───── CLASS ─────
 
-Socket::Socket(QObject* parent): AbstractSocket(parent)
+Socket::Socket(QObject* parent): ISocket(parent)
 {
 }
 
@@ -52,10 +52,63 @@ Socket::~Socket()
     killWorker();
 }
 
+bool Socket::setPeerAddress(const QString& value)
+{
+    if(ISocket::setPeerAddress(value))
+    {
+        if(!socketDescriptor())
+        {
+            LOG_INFO("Peer Address is {}. Restart the worker for update.", value.toStdString());
+            restart();
+        }
+        else
+        {
+            LOG_INFO("Peer Address is {}", value.toStdString());
+        }
+        return true;
+    }
+    return false;
+}
+
+bool Socket::setPeerPort(const quint16& value)
+{
+    if(ISocket::setPeerPort(value))
+    {
+        if(!socketDescriptor())
+        {
+            LOG_INFO("Peer Port is {}. Restart the worker for update.", static_cast<std::uint16_t>(value));
+            restart();
+        }
+        else
+        {
+            LOG_INFO("Peer Port is {}", static_cast<std::uint16_t>(value));
+        }
+        return true;
+    }
+    return false;
+}
+
+bool Socket::setUseWorkerThread(const bool& value)
+{
+    if(ISocket::setUseWorkerThread(value))
+    {
+        LOG_INFO("Restart worker because {}",
+            value ? "it use it's own thread now" : "it's not using it's own thread anymore");
+        restart();
+        return true;
+    }
+    return false;
+}
+
 bool Socket::start()
 {
-    if (!AbstractSocket::start())
+    if(isRunning())
+    {
+        LOG_DEV_WARN("Can't start socket that is already running");
         return false;
+    }
+
+    setRunning(true);
 
     if (socketDescriptor())
     {
@@ -120,23 +173,61 @@ bool Socket::start()
 
 bool Socket::start(quintptr socketDescriptor)
 {
-    return AbstractSocket::start(socketDescriptor);
+    setSocketDescriptor(socketDescriptor);
+    return start();
 }
 
 bool Socket::start(const QString& host, const quint16 port)
 {
-    return AbstractSocket::start(host, port);
+    setPeerAddress(host);
+    setPeerPort(port);
+    return start();
 }
 
 bool Socket::stop()
 {
-    AbstractSocket::stop();
-
     LOG_INFO("Stop worker");
+
+    resetConnected();
+    resetRunning();
+    resetTxBytesPerSeconds();
+    resetRxBytesPerSeconds();
+
     Q_EMIT stopWorker();
     killWorker();
 
     return true;
+}
+
+bool Socket::restart()
+{
+    if(isRunning())
+    {
+        LOG_INFO("Restart");
+        stop();
+        return start();
+    }
+    return false;
+}
+
+void Socket::clearRxCounter()
+{
+    LOG_INFO("Clear Rx Counter");
+    resetRxBytesPerSeconds();
+    resetRxBytesTotal();
+}
+
+void Socket::clearTxCounter()
+{
+    LOG_INFO("Clear Tx Counter");
+    resetTxBytesPerSeconds();
+    resetTxBytesTotal();
+}
+
+void Socket::clearCounters()
+{
+    clearRxCounter();
+    clearTxCounter();
 }
 
 void Socket::killWorker()

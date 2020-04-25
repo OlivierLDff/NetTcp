@@ -4,7 +4,7 @@
 // ───── INCLUDE ─────
 
 // Library Headers
-#include <Net/Tcp/AbstractSocket.hpp>
+#include <Net/Tcp/ISocket.hpp>
 
 // Stl Headers
 #include <memory>
@@ -20,7 +20,7 @@ class SocketWorker;
 
 // ───── CLASS ─────
 
-class Socket : public AbstractSocket
+class Socket : public ISocket
 {
     Q_OBJECT
     NETTCP_REGISTER_TO_QML(Socket);
@@ -30,10 +30,11 @@ public:
     Socket(QObject* parent = nullptr);
     ~Socket();
 
-    // ──────── WORKER ────────
-private:
-    std::unique_ptr<SocketWorker> _worker;
-    std::unique_ptr<QThread> _workerThread;
+    // ──────── ATTRIBUTE ────────
+public:
+    bool setPeerAddress(const QString& value) override;
+    bool setPeerPort(const quint16& value) override;
+    bool setUseWorkerThread(const bool& value) override;
 
     // ──────── C++ API ────────
 public Q_SLOTS:
@@ -41,6 +42,16 @@ public Q_SLOTS:
     bool start(quintptr socketDescriptor) override;
     bool start(const QString& host, const quint16 port) override;
     bool stop() override;
+    bool restart() override;
+
+    void clearRxCounter() override;
+    void clearTxCounter() override;
+    void clearCounters() override;
+
+    // ──────── WORKER ────────
+private:
+    std::unique_ptr<SocketWorker> _worker;
+    std::unique_ptr<QThread> _workerThread;
 
 private Q_SLOTS:
     void killWorker();

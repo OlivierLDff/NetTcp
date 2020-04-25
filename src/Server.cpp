@@ -293,7 +293,7 @@ bool Server::restart()
     return false;
 }
 
-Socket* Server::getSocket(const QString& address, const quint16 port)
+Socket* Server::getSocket(const QString& address, const quint16 port) const
 {
     for(const auto socket: *this)
     {
@@ -303,7 +303,7 @@ Socket* Server::getSocket(const QString& address, const quint16 port)
     return nullptr;
 }
 
-QList<Socket*> Server::getSockets(const QString& address)
+QList<Socket*> Server::getSockets(const QString& address) const
 {
     QList<Socket*> l;
     for(const auto socket: *this)

@@ -4,7 +4,7 @@
 // ───── INCLUDE ─────
 
 // Library Headers
-#include <Net/Tcp/AbstractServer.hpp>
+#include <Net/Tcp/IServer.hpp>
 
 // Stl Headers
 #include <memory>
@@ -44,8 +44,8 @@ public Q_SLOTS:
     bool start(const QString& address, const quint16 port) override final;
     bool stop() override final;
     bool restart() override final;
-    Socket* getSocket(const QString& address, const quint16 port) override final;
-    QList<Socket*> getSockets(const QString& address) override final;
+    Socket* getSocket(const QString& address, const quint16 port) const override final;
+    QList<Socket*> getSockets(const QString& address) const override final;
     void disconnectFrom(const QString& address, const quint16 port) override final;
     void disconnectFrom(const QString& address) override final;
 

@@ -47,8 +47,8 @@ public Q_SLOTS:
     virtual bool stop() = 0;
     virtual bool restart() = 0;
 
-    virtual Socket* getSocket(const QString& address, const quint16 port) = 0;
-    virtual QList<Socket*> getSockets(const QString& address) = 0;
+    virtual Socket* getSocket(const QString& address, const quint16 port) const = 0;
+    virtual QList<Socket*> getSockets(const QString& address) const = 0;
     virtual void disconnectFrom(const QString& address, const quint16 port) = 0;
     virtual void disconnectFrom(const QString& address) = 0;
 
