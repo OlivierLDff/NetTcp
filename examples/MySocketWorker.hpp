@@ -7,7 +7,8 @@ class MySocketWorker : public Net::Tcp::SocketWorker
 {
     Q_OBJECT
 public:
-    MySocketWorker(QObject* parent = nullptr) : Net::Tcp::SocketWorker(parent) {};
+    MySocketWorker(QObject* parent = nullptr) :
+        Net::Tcp::SocketWorker(parent) {};
 
 private:
     bool waitingForData = false;

@@ -9,9 +9,7 @@ using namespace Net::Tcp;
 
 // ───── CLASS ─────
 
-ServerWorker::ServerWorker(QObject* parent): QTcpServer(parent)
-{
-}
+ServerWorker::ServerWorker(QObject* parent) : QTcpServer(parent) {}
 
 void ServerWorker::incomingConnection(qintptr handle)
 {

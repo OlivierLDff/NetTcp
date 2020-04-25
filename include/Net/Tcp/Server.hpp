@@ -44,9 +44,11 @@ public Q_SLOTS:
     bool start(const QString& address, const quint16 port) override final;
     bool stop() override final;
     bool restart() override final;
-    Socket* getSocket(const QString& address, const quint16 port) const override final;
+    Socket* getSocket(
+        const QString& address, const quint16 port) const override final;
     QList<Socket*> getSockets(const QString& address) const override final;
-    void disconnectFrom(const QString& address, const quint16 port) override final;
+    void disconnectFrom(
+        const QString& address, const quint16 port) override final;
     void disconnectFrom(const QString& address) override final;
 
     // ──────── CUSTOM SOCKET API ────────
@@ -64,7 +66,7 @@ private:
 
 private:
     std::unique_ptr<ServerWorker> _worker;
-    std::unique_ptr<QTimer>       _watchdog;
+    std::unique_ptr<QTimer> _watchdog;
 };
 
 }

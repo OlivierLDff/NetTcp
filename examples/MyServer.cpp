@@ -9,8 +9,8 @@ Net::Tcp::Socket* MyServer::newSocket(QObject* parent)
         [this, socket](const QString& string)
         {
             Q_EMIT socket->sendString(string);
-            Q_EMIT stringReceived(string, socket->peerAddress(), socket->peerPort());
-        }
-    );
+            Q_EMIT stringReceived(
+                string, socket->peerAddress(), socket->peerPort());
+        });
     return socket;
 }

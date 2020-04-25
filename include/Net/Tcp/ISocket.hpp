@@ -23,25 +23,25 @@ public:
 
     // ──────── ATTRIBUTE STATE ────────
 protected:
-    NETTCP_PROPERTY_RO      (bool, isRunning, Running);
-    NETTCP_PROPERTY_RO      (bool, isConnected, Connected);
-    NETTCP_PROPERTY_D       (quint64, watchdogPeriod, WatchdogPeriod, 5000);
+    NETTCP_PROPERTY_RO(bool, isRunning, Running);
+    NETTCP_PROPERTY_RO(bool, isConnected, Connected);
+    NETTCP_PROPERTY_D(quint64, watchdogPeriod, WatchdogPeriod, 5000);
 
     // ──────── ATTRIBUTE ────────
 protected:
-    NETTCP_PROPERTY_RO      (QString, localAddress, LocalAddress);
-    NETTCP_PROPERTY_RO      (quint16, localPort, LocalPort);
-    NETTCP_PROPERTY         (QString, peerAddress, PeerAddress);
-    NETTCP_PROPERTY         (quint16, peerPort, PeerPort);
-    NETTCP_PROPERTY         (quintptr, socketDescriptor, SocketDescriptor);
-    NETTCP_PROPERTY         (bool, useWorkerThread, UseWorkerThread);
+    NETTCP_PROPERTY_RO(QString, localAddress, LocalAddress);
+    NETTCP_PROPERTY_RO(quint16, localPort, LocalPort);
+    NETTCP_PROPERTY(QString, peerAddress, PeerAddress);
+    NETTCP_PROPERTY(quint16, peerPort, PeerPort);
+    NETTCP_PROPERTY(quintptr, socketDescriptor, SocketDescriptor);
+    NETTCP_PROPERTY(bool, useWorkerThread, UseWorkerThread);
 
     // ──────── STATUS ────────
 protected:
-    NETTCP_PROPERTY_RO      (quint64, rxBytesPerSeconds, RxBytesPerSeconds);
-    NETTCP_PROPERTY_RO      (quint64, txBytesPerSeconds, TxBytesPerSeconds);
-    NETTCP_PROPERTY_RO      (quint64, rxBytesTotal, RxBytesTotal);
-    NETTCP_PROPERTY_RO      (quint64, txBytesTotal, TxBytesTotal);
+    NETTCP_PROPERTY_RO(quint64, rxBytesPerSeconds, RxBytesPerSeconds);
+    NETTCP_PROPERTY_RO(quint64, txBytesPerSeconds, TxBytesPerSeconds);
+    NETTCP_PROPERTY_RO(quint64, rxBytesTotal, RxBytesTotal);
+    NETTCP_PROPERTY_RO(quint64, txBytesTotal, TxBytesTotal);
 
     // ──────── C++ API ────────
 public Q_SLOTS:

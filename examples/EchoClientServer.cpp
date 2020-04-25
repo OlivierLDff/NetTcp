@@ -11,7 +11,7 @@
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #ifdef _MSC_VER
-#include <spdlog/sinks/msvc_sink.h>
+#    include <spdlog/sinks/msvc_sink.h>
 #endif
 
 // Qt
@@ -23,9 +23,12 @@
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
-std::shared_ptr<spdlog::logger> appLog = std::make_shared<spdlog::logger>("app");
-std::shared_ptr<spdlog::logger> serverLog = std::make_shared<spdlog::logger>("server");
-std::shared_ptr<spdlog::logger> clientLog = std::make_shared<spdlog::logger>("client");
+std::shared_ptr<spdlog::logger> appLog =
+    std::make_shared<spdlog::logger>("app");
+std::shared_ptr<spdlog::logger> serverLog =
+    std::make_shared<spdlog::logger>("server");
+std::shared_ptr<spdlog::logger> clientLog =
+    std::make_shared<spdlog::logger>("client");
 
 class App
 {
@@ -53,90 +56,69 @@ public:
         QObject::connect(&timer, &QTimer::timeout,
             [this]()
             {
-                if (client.isConnected())
+                if(client.isConnected())
                 {
-                    Q_EMIT client.sendString("Echo " + QString::number(counter++));
+                    Q_EMIT client.sendString(
+                        "Echo " + QString::number(counter++));
                 }
-            }
-        );
+            });
         // Print the message that echoed from server socket
         QObject::connect(&client, &MySocket::stringReceived,
             [this](const QString value)
             {
-                clientLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(client.peerAddress()), signed(client.peerPort()));
-            }
-        );
+                clientLog->info("Rx \"{}\" from server {}:{}",
+                    qPrintable(value), qPrintable(client.peerAddress()),
+                    signed(client.peerPort()));
+            });
         // Print the message that received from client socket
         QObject::connect(&server, &MyServer::stringReceived,
             [](const QString value, const QString address, const quint16 port)
             {
-                serverLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(address), port);
-            }
-        );
+                serverLog->info("Rx \"{}\" from server {}:{}",
+                    qPrintable(value), qPrintable(address), port);
+            });
 
         QObject::connect(&server, &Net::Tcp::Server::isRunningChanged,
-            [](bool value)
-            {
-                serverLog->info("isRunning : {}", value);
-            }
-        );
+            [](bool value) { serverLog->info("isRunning : {}", value); });
         QObject::connect(&server, &Net::Tcp::Server::isListeningChanged,
-            [](bool value)
-            {
-                serverLog->info("isBounded : {}", value);
-            }
-        );
+            [](bool value) { serverLog->info("isBounded : {}", value); });
         QObject::connect(&client, &Net::Tcp::Socket::isRunningChanged,
-            [](bool value)
-            {
-                clientLog->info("isRunning : {}", value);
-            }
-        );
+            [](bool value) { clientLog->info("isRunning : {}", value); });
         QObject::connect(&client, &Net::Tcp::Socket::isConnectedChanged,
             [this](bool value)
             {
                 clientLog->info("isConnected : {}", value);
                 // Reset counter at connection/disconnection
                 counter = 0;
-            }
-        );
+            });
         QObject::connect(&server, &Net::Tcp::Server::acceptError,
             [](int value, const QString& error)
-            {
-                serverLog->error("accept error : {}", error.toStdString());
-            }
-        );
+            { serverLog->error("accept error : {}", error.toStdString()); });
         QObject::connect(&client, &Net::Tcp::Socket::socketError,
             [](int value, const QString& error)
-            {
-                clientLog->error("socket error : {}", error.toStdString());
-            }
-        );
+            { clientLog->error("socket error : {}", error.toStdString()); });
         QObject::connect(&server, &Net::Tcp::Server::newClient,
-            [](const QString& address, const quint16 port)
-            {
-                serverLog->info("New Client {}:{}", qPrintable(address), signed(port));
-            }
-        );
+            [](const QString& address, const quint16 port) {
+                serverLog->info(
+                    "New Client {}:{}", qPrintable(address), signed(port));
+            });
         QObject::connect(&server, &Net::Tcp::Server::clientLost,
             [](const QString& address, const quint16 port)
             {
-                serverLog->info("Client Disconnected {}:{}", qPrintable(address), signed(port));
-            }
-        );
+                serverLog->info("Client Disconnected {}:{}",
+                    qPrintable(address), signed(port));
+            });
         QObject::connect(&client, &Net::Tcp::Socket::txBytesTotalChanged,
-            [](quint64 total)
-            {
-                clientLog->info("Sent bytes : {}", total);
-            }
-        );
+            [](quint64 total) { clientLog->info("Sent bytes : {}", total); });
 
-        serverLog->info("Start server on address {}:{}", qPrintable(ip), signed(port));
+        serverLog->info(
+            "Start server on address {}:{}", qPrintable(ip), signed(port));
         // server.start(port) can be called to listen from every interfaces
         server.start(ip, port);
 
         client.setUseWorkerThread(multiThreaded);
-        clientLog->info("Start client to connect to address {}, on port {}", qPrintable(ip), signed(port));
+        clientLog->info("Start client to connect to address {}, on port {}",
+            qPrintable(ip), signed(port));
         client.start(ip, port);
 
         appLog->info("Start application");
@@ -155,7 +137,8 @@ static void installLoggers()
     serverLog->sinks().emplace_back(msvcSink);
 #endif
 
-    const auto stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    const auto stdoutSink =
+        std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     stdoutSink->set_level(spdlog::level::debug);
     Net::Tcp::Logger::registerSink(stdoutSink);
     appLog->sinks().emplace_back(stdoutSink);
@@ -166,7 +149,7 @@ static void installLoggers()
 int main(int argc, char* argv[])
 {
     installLoggers();
-    
+
     QCoreApplication app(argc, argv);
 
     // ────────── COMMAND PARSER ──────────────────────────────────────
@@ -176,17 +159,22 @@ int main(int argc, char* argv[])
     parser.addHelpOption();
 
     QCommandLineOption multiThreadOption(QStringList() << "t",
-        QCoreApplication::translate("main", "Make the worker live in a different thread. Default false"));
+        QCoreApplication::translate("main",
+            "Make the worker live in a different thread. Default false"));
     parser.addOption(multiThreadOption);
 
-    QCommandLineOption portOption(QStringList() << "s" << "src",
-        QCoreApplication::translate("main", "Port for rx packet. Default \"9999\"."),
+    QCommandLineOption portOption(QStringList() << "s"
+                                                << "src",
+        QCoreApplication::translate(
+            "main", "Port for rx packet. Default \"9999\"."),
         QCoreApplication::translate("main", "port"));
     portOption.setDefaultValue("9999");
     parser.addOption(portOption);
 
-    QCommandLineOption ipOption(QStringList() << "i" << "ip",
-        QCoreApplication::translate("main", "Ip address of multicast group. Default \"127.0.0.1\""),
+    QCommandLineOption ipOption(QStringList() << "i"
+                                              << "ip",
+        QCoreApplication::translate(
+            "main", "Ip address of multicast group. Default \"127.0.0.1\""),
         QCoreApplication::translate("main", "ip"));
     ipOption.setDefaultValue(QStringLiteral("127.0.0.1"));
     parser.addOption(ipOption);
@@ -203,10 +191,10 @@ int main(int argc, char* argv[])
     App echo;
     bool ok;
     const auto port = parser.value(portOption).toInt(&ok);
-    if (ok)
+    if(ok)
         echo.port = port;
     const auto ip = parser.value(ipOption);
-    if (!ip.isEmpty())
+    if(!ip.isEmpty())
         echo.ip = ip;
     echo.multiThreaded = parser.isSet(multiThreadOption);
 

@@ -19,7 +19,7 @@ namespace Tcp {
 class NETTCP_API_ ServerWorker : public QTcpServer
 {
     Q_OBJECT
-        // ──────── CONSTRUCTOR ────────
+    // ──────── CONSTRUCTOR ────────
 public:
     ServerWorker(QObject* parent = nullptr);
 

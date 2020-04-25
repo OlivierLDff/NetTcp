@@ -9,12 +9,13 @@
 // Qt Headers
 #include <QObject>
 #include <QTcpSocket>
-#include <QTimer>
 
 // STL Header
 #include <memory>
 
 // ───── DECLARATION ─────
+
+class QTimer;
 
 namespace Net {
 namespace Tcp {
@@ -27,7 +28,7 @@ class NETTCP_API_ SocketWorker : public QObject
     // ──────── CONSTRUCTOR ────────
 public:
     SocketWorker(QObject* parent = nullptr);
-    virtual ~SocketWorker();
+    ~SocketWorker();
 
     // ──────── ATTRIBUTES ────────
 private:
@@ -53,6 +54,7 @@ public:
 public Q_SLOTS:
     virtual void onDataAvailable();
     bool isConnected() const;
+
 public:
     size_t bytesAvailable() const;
     size_t read(uint8_t* data, size_t maxLen);
@@ -66,7 +68,8 @@ protected Q_SLOTS:
     virtual void onDisconnected();
 
 Q_SIGNALS:
-    void startSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort);
+    void startSuccess(const QString& peerAddress, const quint16 peerPort,
+        const QString& localAddress, const quint16 localPort);
     void startFailed();
     void connectionChanged(bool connected);
     void socketError(int error, QString description);

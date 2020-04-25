@@ -18,6 +18,7 @@
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
+// clang-format off
 #ifdef NDEBUG
 # define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
 #else
@@ -46,6 +47,7 @@
 #define LOG_INFO(str, ...)       Net::Tcp::Logger::SOCKET->info( str, ## __VA_ARGS__);
 #define LOG_WARN(str, ...)       Net::Tcp::Logger::SOCKET->warn( str, ## __VA_ARGS__);
 #define LOG_ERR(str, ...)        Net::Tcp::Logger::SOCKET->error(str, ## __VA_ARGS__);
+// clang-format on
 
 // ─────────────────────────────────────────────────────────────
 //                  FUNCTIONS
@@ -58,9 +60,11 @@ static quint8 _minor = 0;
 
 static void NetTcp_registerTypes()
 {
-    LOG_DEV_INFO("Register NetTcp v{}", qPrintable(Net::Tcp::Version::version().readable()));
+    LOG_DEV_INFO("Register NetTcp v{}",
+        qPrintable(Net::Tcp::Version::version().readable()));
 
-    LOG_DEV_INFO("Register Singleton {}.Version {}.{} to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO(
+        "Register Singleton {}.Version {}.{} to QML", *_uri, _major, _minor);
     Net::Tcp::Version::registerSingleton(*_uri, _major, _minor);
 
     LOG_DEV_INFO("Register {}.Server {}.{} to QML", *_uri, _major, _minor);
@@ -73,7 +77,8 @@ static void NetTcp_registerTypes()
     qRegisterMetaType<QAbstractSocket::SocketState>();
 }
 
-static void NetTcp_registerTypes(const char* uri, const quint8 major, const quint8 minor)
+static void NetTcp_registerTypes(
+    const char* uri, const quint8 major, const quint8 minor)
 {
     if(uri)
         _uri = &uri;
@@ -84,7 +89,8 @@ static void NetTcp_registerTypes(const char* uri, const quint8 major, const quin
 
 void NetTcp_loadResources()
 {
-    LOG_DEV_INFO("Load NetTcp.qrc v{}", qPrintable(Net::Tcp::Version::version().readable()));
+    LOG_DEV_INFO("Load NetTcp.qrc v{}",
+        qPrintable(Net::Tcp::Version::version().readable()));
     Q_INIT_RESOURCE(NetTcp);
 }
 
@@ -95,12 +101,10 @@ Q_COREAPP_STARTUP_FUNCTION(NetTcp_loadResources)
 
 using namespace Net::Tcp;
 
-void Utils::registerTypes(const char* uri, const quint8 major, const quint8 minor)
+void Utils::registerTypes(
+    const char* uri, const quint8 major, const quint8 minor)
 {
     ::NetTcp_registerTypes(uri, major, minor);
 }
 
-void Utils::loadResources()
-{
-    ::NetTcp_loadResources();
-}
+void Utils::loadResources() { ::NetTcp_loadResources(); }

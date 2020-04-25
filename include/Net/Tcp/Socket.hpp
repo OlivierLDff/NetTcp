@@ -55,7 +55,8 @@ private:
 
 private Q_SLOTS:
     void killWorker();
-    void onStartSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort);
+    void onStartSuccess(const QString& peerAddress, const quint16 peerPort,
+        const QString& localAddress, const quint16 localPort);
     void onStartFail();
     void onBytesReceived(const uint64_t count);
     void onBytesSent(const uint64_t count);

@@ -12,6 +12,8 @@
 
 using namespace Net::Tcp;
 
+// clang-format off
+
 #ifdef NDEBUG
 # define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
 #else
@@ -41,16 +43,13 @@ using namespace Net::Tcp;
 #define LOG_WARN(str, ...)       Logger::SOCKET->warn(  "[{}] " str, (void*)(this), ## __VA_ARGS__);
 #define LOG_ERR(str, ...)        Logger::SOCKET->error( "[{}] " str, (void*)(this), ## __VA_ARGS__);
 
+// clang-format on
+
 // ───── CLASS ─────
 
-Socket::Socket(QObject* parent): ISocket(parent)
-{
-}
+Socket::Socket(QObject* parent) : ISocket(parent) {}
 
-Socket::~Socket()
-{
-    killWorker();
-}
+Socket::~Socket() { killWorker(); }
 
 bool Socket::setPeerAddress(const QString& value)
 {
@@ -58,7 +57,8 @@ bool Socket::setPeerAddress(const QString& value)
     {
         if(!socketDescriptor())
         {
-            LOG_INFO("Peer Address is {}. Restart the worker for update.", value.toStdString());
+            LOG_INFO("Peer Address is {}. Restart the worker for update.",
+                value.toStdString());
             restart();
         }
         else
@@ -76,7 +76,8 @@ bool Socket::setPeerPort(const quint16& value)
     {
         if(!socketDescriptor())
         {
-            LOG_INFO("Peer Port is {}. Restart the worker for update.", static_cast<std::uint16_t>(value));
+            LOG_INFO("Peer Port is {}. Restart the worker for update.",
+                static_cast<std::uint16_t>(value));
             restart();
         }
         else
@@ -93,7 +94,8 @@ bool Socket::setUseWorkerThread(const bool& value)
     if(ISocket::setUseWorkerThread(value))
     {
         LOG_INFO("Restart worker because {}",
-            value ? "it use it's own thread now" : "it's not using it's own thread anymore");
+            value ? "it use it's own thread now" :
+                    "it's not using it's own thread anymore");
         restart();
         return true;
     }
@@ -110,13 +112,15 @@ bool Socket::start()
 
     setRunning(true);
 
-    if (socketDescriptor())
+    if(socketDescriptor())
     {
-        LOG_INFO("Start tcp socket via socketDescriptor {}", signed(socketDescriptor()));
+        LOG_INFO("Start tcp socket via socketDescriptor {}",
+            signed(socketDescriptor()));
     }
     else
     {
-        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()), signed(peerPort()));
+        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()),
+            signed(peerPort()));
     }
 
     Q_ASSERT(_worker.get() == nullptr);
@@ -128,20 +132,21 @@ bool Socket::start()
     {
         _workerThread = std::make_unique<QThread>();
 
-
-        if (objectName().size())
+        if(objectName().size())
             _workerThread->setObjectName(objectName() + " Worker");
         else
         {
-            if (socketDescriptor())
-                _workerThread->setObjectName("Socket Worker sd" + QString::number(socketDescriptor()));
+            if(socketDescriptor())
+                _workerThread->setObjectName(
+                    "Socket Worker sd" + QString::number(socketDescriptor()));
             else
-                _workerThread->setObjectName("Socket Worker " + peerAddress() + ":" + QString::number(peerPort()));
+                _workerThread->setObjectName("Socket Worker " + peerAddress() +
+                                             ":" + QString::number(peerPort()));
         }
         _worker->moveToThread(_workerThread.get());
     }
 
-    if (socketDescriptor())
+    if(socketDescriptor())
     {
         _worker->_socketDescriptor = socketDescriptor();
     }
@@ -152,15 +157,22 @@ bool Socket::start()
         _worker->_port = peerPort();
     }
 
-    connect(_worker.get(), &SocketWorker::startSuccess, this, &Socket::onStartSuccess);
-    connect(_worker.get(), &SocketWorker::startFailed, this, &Socket::onStartFail);
-    connect(_worker.get(), &SocketWorker::connectionChanged, this, &Socket::setConnected);
-    connect(_worker.get(), &SocketWorker::socketError, this, &Socket::socketError);
-    connect(_worker.get(), &SocketWorker::bytesReceived, this, &Socket::onBytesReceived);
-    connect(_worker.get(), &SocketWorker::bytesSent, this, &Socket::onBytesSent);
+    connect(_worker.get(), &SocketWorker::startSuccess, this,
+        &Socket::onStartSuccess);
+    connect(
+        _worker.get(), &SocketWorker::startFailed, this, &Socket::onStartFail);
+    connect(_worker.get(), &SocketWorker::connectionChanged, this,
+        &Socket::setConnected);
+    connect(
+        _worker.get(), &SocketWorker::socketError, this, &Socket::socketError);
+    connect(_worker.get(), &SocketWorker::bytesReceived, this,
+        &Socket::onBytesReceived);
+    connect(
+        _worker.get(), &SocketWorker::bytesSent, this, &Socket::onBytesSent);
     connect(this, &Socket::startWorker, _worker.get(), &SocketWorker::onStart);
     connect(this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop);
-    connect(this, &Socket::watchdogPeriodChanged, _worker.get(), &SocketWorker::onWatchdogPeriodChanged);
+    connect(this, &Socket::watchdogPeriodChanged, _worker.get(),
+        &SocketWorker::onWatchdogPeriodChanged);
 
     if(_workerThread)
         _workerThread->start();
@@ -232,7 +244,7 @@ void Socket::clearCounters()
 
 void Socket::killWorker()
 {
-    if (_workerThread)
+    if(_workerThread)
     {
         LOG_INFO("Kill Worker thread and worker");
         _workerThread->exit();
@@ -240,7 +252,7 @@ void Socket::killWorker()
         _workerThread = nullptr;
         _worker = nullptr;
     }
-    else if (_worker)
+    else if(_worker)
     {
         LOG_INFO("Kill Worker");
         const auto workerPtr = _worker.release();
@@ -250,10 +262,10 @@ void Socket::killWorker()
     }
 }
 
-void Socket::onStartSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress,
-    const quint16 localPort)
+void Socket::onStartSuccess(const QString& peerAddress, const quint16 peerPort,
+    const QString& localAddress, const quint16 localPort)
 {
-    if (socketDescriptor())
+    if(socketDescriptor())
     {
         setPeerAddress(peerAddress);
         setPeerPort(peerPort);
