@@ -136,7 +136,7 @@ if(NETTCP_ENABLE_QML)
   # Trick to rerun cmake each time NetTcp.qrc is updated
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc
-    ${CMAKE_CURRENT_BINARY_DIR}/qml.junk
+    ${CMAKE_CURRENT_BINARY_DIR}/NetTcp.qrc.junk
     )
 
   # Dont Run Moc on cpp file generated from qml
@@ -159,7 +159,6 @@ set(NETTCP_UTILS_SRCS
   )
 
 set(NETTCP_API_SRCS
-  ${NETTCP_SRCS_FOLDER}/AbstractServer.cpp
   ${NETTCP_SRCS_FOLDER}/AbstractSocket.cpp
   ${NETTCP_SRCS_FOLDER}/Server.cpp
   ${NETTCP_SRCS_FOLDER}/Socket.cpp
@@ -185,14 +184,12 @@ set(NETTCP_UTILS_INCS
 set(NETTCP_API_INCS
   ${NETTCP_PRIVATE_INCS_FOLDER}/IServer.hpp
   ${NETTCP_PRIVATE_INCS_FOLDER}/ISocket.hpp
-  ${NETTCP_PRIVATE_INCS_FOLDER}/AbstractServer.hpp
   ${NETTCP_PRIVATE_INCS_FOLDER}/AbstractSocket.hpp
   ${NETTCP_PRIVATE_INCS_FOLDER}/Server.hpp
   ${NETTCP_PRIVATE_INCS_FOLDER}/Socket.hpp
   ${NETTCP_PRIVATE_INCS_FOLDER}/ServerWorker.hpp
   ${NETTCP_PRIVATE_INCS_FOLDER}/SocketWorker.hpp
   )
-# endif(NETTCP_ENABLE_FLATBUFFERS)
 
 set(NETTCP_INCS ${NETTCP_UTILS_INCS}
   ${NETTCP_API_INCS}

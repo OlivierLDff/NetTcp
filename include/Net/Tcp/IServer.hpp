@@ -23,21 +23,21 @@ class NETTCP_API_ IServer : public QOlm::QOlm<Socket>
 
     // ──────── CONSTRUCTOR ────────
 public:
-    IServer(QObject* parent = nullptr,
-        const QList<QByteArray> & exposedRoles = {},
-        const QByteArray & displayRole = {}) :
+    IServer(QObject* parent = nullptr, const QList<QByteArray>& exposedRoles = {}, const QByteArray& displayRole = {}) :
         QOlm<Socket>(parent, exposedRoles, displayRole)
     {
     }
 
     // ──────── ATTRIBUTES ────────
 protected:
+    // clang-format off
     NETTCP_PROPERTY_RO          (bool, isRunning, Running);
     NETTCP_PROPERTY_RO          (bool, isListening, Listening);
     NETTCP_PROPERTY_D           (quint64, watchdogPeriod, WatchdogPeriod, 1000);
     NETTCP_PROPERTY             (QString, address, Address);
     NETTCP_PROPERTY             (quint16, port, Port);
     NETTCP_PROPERTY             (bool, useWorkerThread, UseWorkerThread);
+    // clang-format on
 
     // ──────── C++ API ────────
 public Q_SLOTS:
@@ -50,6 +50,7 @@ public Q_SLOTS:
     virtual Socket* getSocket(const QString& address, const quint16 port) = 0;
     virtual QList<Socket*> getSockets(const QString& address) = 0;
     virtual void disconnectFrom(const QString& address, const quint16 port) = 0;
+    virtual void disconnectFrom(const QString& address) = 0;
 
     // ──────── SIGNALS ────────
 Q_SIGNALS:

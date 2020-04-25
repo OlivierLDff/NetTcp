@@ -20,7 +20,7 @@ class ServerWorker;
 
 // ───── CLASS ─────
 
-class NETTCP_API_ Server : public AbstractServer
+class NETTCP_API_ Server : public IServer
 {
     Q_OBJECT
     NETTCP_REGISTER_TO_QML(Server)
@@ -43,6 +43,11 @@ public Q_SLOTS:
     bool start(const quint16 port) override final;
     bool start(const QString& address, const quint16 port) override final;
     bool stop() override final;
+    bool restart() override final;
+    Socket* getSocket(const QString& address, const quint16 port) override final;
+    QList<Socket*> getSockets(const QString& address) override final;
+    void disconnectFrom(const QString& address, const quint16 port) override final;
+    void disconnectFrom(const QString& address) override final;
 
     // ──────── CUSTOM SOCKET API ────────
 protected:
@@ -59,7 +64,7 @@ private:
 
 private:
     std::unique_ptr<ServerWorker> _worker;
-    std::unique_ptr<QTimer> _watchdog;
+    std::unique_ptr<QTimer>       _watchdog;
 };
 
 }
