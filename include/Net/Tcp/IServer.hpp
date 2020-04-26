@@ -17,7 +17,7 @@ namespace Tcp {
 // ───── CLASS ─────
 
 /** Interface Server class that define API and basic property */
-class NETTCP_API_ IServer : public QOlm::QOlm<Socket>
+class NETTCP_API_ IServer : public qolm::QOlm<Socket>
 {
     Q_OBJECT
 
