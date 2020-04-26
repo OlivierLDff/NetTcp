@@ -1,6 +1,6 @@
 #include <MySocket.hpp>
 
-std::unique_ptr<Net::Tcp::SocketWorker> MySocket::createWorker()
+std::unique_ptr<net::tcp::SocketWorker> MySocket::createWorker()
 {
     auto worker = std::make_unique<MySocketWorker>();
 

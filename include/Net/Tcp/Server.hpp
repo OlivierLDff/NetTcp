@@ -13,8 +13,8 @@
 
 class QTimer;
 
-namespace Net {
-namespace Tcp {
+namespace net {
+namespace tcp {
 
 class ServerWorker;
 

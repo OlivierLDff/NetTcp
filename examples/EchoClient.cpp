@@ -63,19 +63,19 @@ public:
                     qPrintable(value), qPrintable(client.peerAddress()),
                     signed(client.peerPort()));
             });
-        QObject::connect(&client, &Net::Tcp::Socket::isRunningChanged,
+        QObject::connect(&client, &net::tcp::Socket::isRunningChanged,
             [](bool value) { clientLog->info("isRunning : {}", value); });
-        QObject::connect(&client, &Net::Tcp::Socket::isConnectedChanged,
+        QObject::connect(&client, &net::tcp::Socket::isConnectedChanged,
             [this](bool value)
             {
                 clientLog->info("isConnected : {}", value);
                 // Reset counter at connection/disconnection
                 counter = 0;
             });
-        QObject::connect(&client, &Net::Tcp::Socket::socketError,
+        QObject::connect(&client, &net::tcp::Socket::socketError,
             [](int value, const QString& error)
             { clientLog->error("socket error : {}", error.toStdString()); });
-        QObject::connect(&client, &Net::Tcp::Socket::txBytesTotalChanged,
+        QObject::connect(&client, &net::tcp::Socket::txBytesTotalChanged,
             [](quint64 total) { clientLog->info("Sent bytes : {}", total); });
 
         client.setUseWorkerThread(multiThreaded);
@@ -93,7 +93,7 @@ static void installLoggers()
 #ifdef _MSC_VER
     const auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
     msvcSink->set_level(spdlog::level::debug);
-    Net::Tcp::Logger::registerSink(msvcSink);
+    net::tcp::Logger::registerSink(msvcSink);
     appLog->sinks().emplace_back(msvcSink);
     clientLog->sinks().emplace_back(msvcSink);
 #endif
@@ -101,7 +101,7 @@ static void installLoggers()
     const auto stdoutSink =
         std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     stdoutSink->set_level(spdlog::level::debug);
-    Net::Tcp::Logger::registerSink(stdoutSink);
+    net::tcp::Logger::registerSink(stdoutSink);
     appLog->sinks().emplace_back(stdoutSink);
     clientLog->sinks().emplace_back(stdoutSink);
 }
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
     // ────────── APPLICATION ──────────────────────────────────────
 
     // Register types for to use SharedDatagram in signals
-    Net::Tcp::Utils::registerTypes();
+    net::tcp::Utils::registerTypes();
 
     // Create the app and start it
     App echo;

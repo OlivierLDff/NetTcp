@@ -4,14 +4,14 @@
 #include <MySocketWorker.hpp>
 #include <Net/Tcp/Socket.hpp>
 
-class MySocket : public Net::Tcp::Socket
+class MySocket : public net::tcp::Socket
 {
     Q_OBJECT
 public:
-    MySocket(QObject* parent = nullptr) : Net::Tcp::Socket(parent) {};
+    MySocket(QObject* parent = nullptr) : net::tcp::Socket(parent) {};
 
 protected:
-    std::unique_ptr<Net::Tcp::SocketWorker> createWorker() override;
+    std::unique_ptr<net::tcp::SocketWorker> createWorker() override;
 
 Q_SIGNALS:
     void sendString(const QString& s);

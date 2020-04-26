@@ -3,14 +3,14 @@
 
 #include <Net/Tcp/Server.hpp>
 
-class MyServer : public Net::Tcp::Server
+class MyServer : public net::tcp::Server
 {
     Q_OBJECT
 public:
     bool multiThreaded = false;
 
 protected:
-    Net::Tcp::Socket* newSocket(QObject* parent) override;
+    net::tcp::Socket* newSocket(QObject* parent) override;
 
 Q_SIGNALS:
     void stringReceived(QString string, QString address, quint16 port);

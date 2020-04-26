@@ -12,8 +12,8 @@ This library also provide a tool object that demonstrate every Qmls functionalit
 
 In order to use this qml object into another qml file, multiple steps are required.
 
-* Call `Net::Tcp::Utils::registerTypes(...)` to register `AbstractServer`, `Server`, `AbstractSocket`, ... to the qml system
-* Call `Net::Tcp::Utils::loadResources()` to load every `NetTcp` resources into the `qrc`.
+* Call `net::tcp::Utils::registerTypes(...)` to register `AbstractServer`, `Server`, `AbstractSocket`, ... to the qml system
+* Call `net::tcp::Utils::loadResources()` to load every `NetTcp` resources into the `qrc`.
 
 Then simply to something like that:
 

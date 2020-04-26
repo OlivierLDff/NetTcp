@@ -5,7 +5,7 @@
 
 // ───── DECLARATION ─────
 
-using namespace Net::Tcp;
+using namespace net::tcp;
 
 // ───── CLASS ─────
 

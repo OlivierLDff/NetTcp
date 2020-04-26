@@ -1,7 +1,7 @@
 #include <MyServer.hpp>
 #include <MySocket.hpp>
 
-Net::Tcp::Socket* MyServer::newSocket(QObject* parent)
+net::tcp::Socket* MyServer::newSocket(QObject* parent)
 {
     const auto socket = new MySocket(parent);
     socket->setUseWorkerThread(multiThreaded);

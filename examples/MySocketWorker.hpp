@@ -3,12 +3,12 @@
 
 #include <Net/Tcp/SocketWorker.hpp>
 
-class MySocketWorker : public Net::Tcp::SocketWorker
+class MySocketWorker : public net::tcp::SocketWorker
 {
     Q_OBJECT
 public:
     MySocketWorker(QObject* parent = nullptr) :
-        Net::Tcp::SocketWorker(parent) {};
+        net::tcp::SocketWorker(parent) {};
 
 private:
     bool waitingForData = false;

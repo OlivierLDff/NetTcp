@@ -6,7 +6,7 @@
 
 // ───── DECLARATION ─────
 
-using namespace Net::Tcp;
+using namespace net::tcp;
 
 template<typename... Args>
 static Logger::LogPtr makeLog(Args&&... args)

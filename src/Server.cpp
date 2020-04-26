@@ -11,37 +11,37 @@
 
 // ───── DECLARATION ─────
 
-using namespace Net::Tcp;
+using namespace net::tcp;
 
 // clang-format off
 #ifdef NDEBUG
-#define LOG_DEV_DEBUG(str, ...) { do {} while (0); }
+#define LOG_DEV_DEBUG(str, ...) do {} while (0)
 #else
-#define LOG_DEV_DEBUG(str, ...) Logger::SERVER->debug("[{}] " str, (void*) (this), ##__VA_ARGS__);
+#define LOG_DEV_DEBUG(str, ...) Logger::SERVER->debug("[{}] " str, (void*) (this), ##__VA_ARGS__)
 #endif
 
 #ifdef NDEBUG
-#define LOG_DEV_INFO(str, ...) { do {} while (0); }
+#define LOG_DEV_INFO(str, ...) do {} while (0)
 #else
-#define LOG_DEV_INFO(str, ...) Logger::SERVER->info("[{}] " str, (void*) (this), ##__VA_ARGS__);
+#define LOG_DEV_INFO(str, ...) Logger::SERVER->info("[{}] " str, (void*) (this), ##__VA_ARGS__)
 #endif
 
 #ifdef NDEBUG
-#define LOG_DEV_WARN(str, ...) { do {} while (0); }
+#define LOG_DEV_WARN(str, ...) do {} while (0)
 #else
-#define LOG_DEV_WARN(str, ...) Logger::SERVER->warn("[{}] " str, (void*) (this), ##__VA_ARGS__);
+#define LOG_DEV_WARN(str, ...) Logger::SERVER->warn("[{}] " str, (void*) (this), ##__VA_ARGS__)
 #endif
 
 #ifdef NDEBUG
-#define LOG_DEV_ERR(str, ...) { do {} while (0); }
+#define LOG_DEV_ERR(str, ...) do {} while (0)
 #else
-#define LOG_DEV_ERR(str, ...) Logger::SERVER->error("[{}] " str, (void*) (this), ##__VA_ARGS__);
+#define LOG_DEV_ERR(str, ...) Logger::SERVER->error("[{}] " str, (void*) (this), ##__VA_ARGS__)
 #endif
 
-#define LOG_DEBUG(str, ...) Logger::SERVER->debug("[{}] " str, (void*) (this), ##__VA_ARGS__);
-#define LOG_INFO(str, ...) Logger::SERVER->info("[{}] " str, (void*) (this), ##__VA_ARGS__);
-#define LOG_WARN(str, ...) Logger::SERVER->warn("[{}] " str, (void*) (this), ##__VA_ARGS__);
-#define LOG_ERR(str, ...) Logger::SERVER->error("[{}] " str, (void*) (this), ##__VA_ARGS__);
+#define LOG_DEBUG(str, ...)   Logger::SERVER->debug("[{}] " str, (void*) (this), ##__VA_ARGS__)
+#define LOG_INFO(str, ...)    Logger::SERVER->info( "[{}] " str, (void*) (this), ##__VA_ARGS__)
+#define LOG_WARN(str, ...)    Logger::SERVER->warn( "[{}] " str, (void*) (this), ##__VA_ARGS__)
+#define LOG_ERR(str, ...)     Logger::SERVER->error("[{}] " str, (void*) (this), ##__VA_ARGS__)
 // clang-format on
 
 // ───── CLASS ─────

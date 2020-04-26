@@ -34,7 +34,7 @@ Creating a client is the easiest way to start, because only `Socket` and `Socket
 
 Let's start by implementing a custom `SocketWorker`.
 
-* Inherit from `Net::Tcp::SocketWorker`.
+* Inherit from `net::tcp::SocketWorker`.
   * It's a QObject, so don't forget the Q_OBJECT macro.
 * Override `void onDataAvailable()`. This function will be called each time new data is available to poll.
   * This function run in the worker thread. It' can either be a thread created by owning `Server`, or `Server` thread.
@@ -53,11 +53,11 @@ The example is self explanatory.
 * Custom signals & slots are present to communicate with `Socket`.
 
 ```cpp
-class MySocketWorker : public Net::Tcp::SocketWorker
+class MySocketWorker : public net::tcp::SocketWorker
 {
     Q_OBJECT
 public:
-    MySocketWorker(QObject* parent = nullptr) : Net::Tcp::SocketWorker(parent) {}
+    MySocketWorker(QObject* parent = nullptr) : net::tcp::SocketWorker(parent) {}
 
 private:
     bool waitingForData = false;
@@ -91,7 +91,7 @@ protected Q_SLOTS:
     // !! DONT FORGET TO RELEASE BUFFER !! IMPORTANT !! //
     void onConnected() override final
     {
-        Net::Tcp::SocketWorker::onConnected();
+        net::tcp::SocketWorker::onConnected();
         waitingForData = false;
         bufferLength = 0;
     }
@@ -147,17 +147,17 @@ Now let's implement a custom `Socket`. It will be responsible of:
 
 * Sending string to the worker
 * Receiving string from the worker
-* Create the wanted custom worker by overriding `std::unique_ptr<Net::Tcp::SocketWorker> createWorker()`.
+* Create the wanted custom worker by overriding `std::unique_ptr<net::tcp::SocketWorker> createWorker()`.
 
 ```cpp
-class MySocket : public Net::Tcp::Socket
+class MySocket : public net::tcp::Socket
 {
     Q_OBJECT
 public:
-    MySocket(QObject* parent = nullptr) : Net::Tcp::Socket(parent) {}
+    MySocket(QObject* parent = nullptr) : net::tcp::Socket(parent) {}
 
 protected:
-    std::unique_ptr<Net::Tcp::SocketWorker> createWorker() override
+    std::unique_ptr<net::tcp::SocketWorker> createWorker() override
     {
         auto worker = std::make_unique<MySocketWorker>();
 
@@ -202,14 +202,14 @@ Let's create a custom server than can receive strings for multiple clients. Beca
 
 Let's create a `MyServer` that create `MySocket` for each client that connect. When a string is received by the server, the message is echoed to the client.
 
-* Override `Net::Tcp::AbstractSocket* newTcpSocket(QObject* parent)` to create a new socket each time a client connects.
+* Override `net::tcp::AbstractSocket* newTcpSocket(QObject* parent)` to create a new socket each time a client connects.
 
 ```cpp
-class MyServer : public Net::Tcp::Server
+class MyServer : public net::tcp::Server
 {
     Q_OBJECT
 protected:
-    Net::Tcp::AbstractSocket* newTcpSocket(QObject* parent) override
+    net::tcp::AbstractSocket* newTcpSocket(QObject* parent) override
     {
         const auto s = new MySocket(parent);
         connect(s, &MySocket::stringReceived, [this, s](const QString& string)
@@ -258,15 +258,15 @@ It's possible to react to multiple signals from the `Server`.
 #include <spdlog/sinks/stdout_color_sinks.h>
 // ... Log NetTcp to stdout
 const auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-Net::Tcp::Logger::registerSink(sink);
+net::tcp::Logger::registerSink(sink);
 // ...
 ```
 
 `NetTcp` use 4 main category:
 
-* `net.tcp.server` : Log from `Net::Tcp::Server` objects
-* `net.tcp.socket` : Log from `Net::Tcp::Socket` objects
-* `net.tcp.socket.worker` : Log from `Net::Tcp::SocketWorker` objects
+* `net.tcp.server` : Log from `net::tcp::Server` objects
+* `net.tcp.socket` : Log from `net::tcp::Socket` objects
+* `net.tcp.socket.worker` : Log from `net::tcp::SocketWorker` objects
 * `net.tcp.utils` : Register type logs
 
 ## Register types
@@ -275,9 +275,9 @@ To use the type from qml you need to register them. **NetTcp** also provide a qm
 
 ```c++
 // Register types to QML
-Net::Tcp::Utils::registerTypes();
+net::tcp::Utils::registerTypes();
 // Load NetTcp.qrc
-Net::Tcp::Utils::loadResources();
+net::tcp::Utils::loadResources();
 ```
 
 ## Examples

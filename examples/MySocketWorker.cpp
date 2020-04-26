@@ -2,7 +2,7 @@
 
 void MySocketWorker::onConnected()
 {
-    Net::Tcp::SocketWorker::onConnected();
+    net::tcp::SocketWorker::onConnected();
     waitingForData = false;
     bufferLength = 0;
 }

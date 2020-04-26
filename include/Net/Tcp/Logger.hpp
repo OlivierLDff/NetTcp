@@ -16,8 +16,8 @@
 
 // ───── DECLARATION ─────
 
-namespace Net {
-namespace Tcp {
+namespace net {
+namespace tcp {
 
 // ───── CLASS ─────
 

@@ -13,8 +13,8 @@
 
 class QThread;
 
-namespace Net {
-namespace Tcp {
+namespace net {
+namespace tcp {
 
 class SocketWorker;
 
