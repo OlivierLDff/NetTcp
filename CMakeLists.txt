@@ -205,29 +205,27 @@ if(NETTCP_BUILD_SHARED)
   add_library(${NETTCP_TARGET} SHARED ${NETTCP_SRCS} ${NETTCP_INCS})
   target_compile_definitions(${NETTCP_TARGET} PRIVATE "-DNETTCP_DLL_EXPORT")
 
-else(NETTCP_BUILD_SHARED)
+else()
 
   add_library(${NETTCP_TARGET} STATIC  ${NETTCP_SRCS} ${NETTCP_INCS})
   target_compile_definitions(${NETTCP_TARGET} PUBLIC "-DNETTCP_STATIC")
 
-endif(NETTCP_BUILD_SHARED)
+endif()
 
 # Set cxx 14 only on target and not the whole project
 target_compile_features(${NETTCP_TARGET} PUBLIC cxx_std_14)
 
 # Set include directory
-target_include_directories(${NETTCP_TARGET} PUBLIC $<BUILD_INTERFACE:${NETTCP_INCS_FOLDER}> $<INSTALL_INTERFACE:${NETTCP_INSTALL_PREFIX}>)
-
-# Link libraries
-target_link_libraries(${NETTCP_TARGET} PUBLIC spdlog QOlm)
+target_include_directories(${NETTCP_TARGET} PUBLIC $<BUILD_INTERFACE:${NETTCP_INCS_FOLDER}>)
 
 set_target_properties(${NETTCP_TARGET} PROPERTIES AUTOMOC TRUE)
 if(NETTCP_ENABLE_QML)
   set_target_properties(${NETTCP_TARGET} PROPERTIES AUTORCC TRUE)
 endif()
-# NETTCP_ENABLE_QML
 
 target_link_libraries(${NETTCP_TARGET} PUBLIC
+  spdlog
+  QOlm
   Qt5::Core
   Qt5::Qml
   Qt5::Network
