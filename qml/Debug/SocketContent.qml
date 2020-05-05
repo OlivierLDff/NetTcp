@@ -58,7 +58,7 @@ Column
         highlighted: false
         backgroundImplicitHeight: 20
         text: "watchdogPeriod : " + (root.object ? root.object.watchdogPeriod : "")
-        onClicked: if(root.object) dialogManager.openTextField({
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
             acceptedCallback: function(result, acceptableInput)
             {
                 root.object.watchdogPeriod = result
@@ -81,13 +81,13 @@ Column
         highlighted: false
         backgroundImplicitHeight: 20
         text: "peerAddress : " + (root.object ? root.object.peerAddress : "")
-        onClicked: if(root.object) dialogManager.openTextField({
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
             acceptedCallback: function(result, acceptableInput)
             {
                 if(acceptableInput)
                     root.object.peerAddress = result
                 else
-                    snackbarManager.show({text : result + " isn't an ipv4 peerAddress"})
+                    Qaterial.SnackbarManager.show({text : result + " isn't an ipv4 peerAddress"})
             },
             text: root.object.peerAddress,
             title: qsTr("Enter Bind Ip Address"),
@@ -106,7 +106,7 @@ Column
         highlighted: false
         backgroundImplicitHeight: 20
         text: "peerPort : " + (root.object ? root.object.peerPort : "")
-        onClicked: if(root.object) dialogManager.openTextField({
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
             acceptedCallback: function(result, acceptableInput)
             {
                 root.object.peerPort = result
@@ -176,12 +176,12 @@ Column
                 if(root.object && root.object.isRunning)
                 {
                     if(!root.object.stop())
-                        snackbarManager.show({text : "Fail to stop socket"})
+                        Qaterial.SnackbarManager.show({text : "Fail to stop socket"})
                 }
                 else if(root.object)
                 {
                     if(!root.object.start())
-                        snackbarManager.show({text : "Fail to start socket"})
+                        Qaterial.SnackbarManager.show({text : "Fail to start socket"})
                 }
             }
         }

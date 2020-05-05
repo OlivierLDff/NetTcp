@@ -44,7 +44,7 @@ Column
         highlighted: false
         backgroundImplicitHeight: 20
         text: "watchdogPeriod : " + (root.object ? root.object.watchdogPeriod : "")
-        onClicked: if(root.object) dialogManager.openTextField({
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
             acceptedCallback: function(result, acceptableInput)
             {
                 root.object.watchdogPeriod = result
@@ -67,13 +67,13 @@ Column
         highlighted: false
         backgroundImplicitHeight: 20
         text: "address : " + (root.object ? root.object.address : "")
-        onClicked: if(root.object) dialogManager.openTextField({
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
             acceptedCallback: function(result, acceptableInput)
             {
                 if(acceptableInput)
                     root.object.address = result
                 else
-                    snackbarManager.show({text : result + " isn't an ipv4 address"})
+                    Qaterial.SnackbarManager.show({text : result + " isn't an ipv4 address"})
             },
             text: root.object.address,
             title: qsTr("Enter Bind Ip Address"),
@@ -94,7 +94,7 @@ Column
         highlighted: false
         backgroundImplicitHeight: 20
         text: "port : " + (root.object ? root.object.port : "")
-        onClicked: if(root.object) dialogManager.openTextField({
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
             acceptedCallback: function(result, acceptableInput)
             {
                 root.object.port = result
@@ -125,12 +125,12 @@ Column
                 if(root.object && root.object.isRunning)
                 {
                     if(!root.object.stop())
-                        snackbarManager.show({text : "Fail to stop server"})
+                        Qaterial.SnackbarManager.show({text : "Fail to stop server"})
                 }
                 else if(root.object)
                 {
                     if(!root.object.start())
-                        snackbarManager.show({text : "Fail to start server"})
+                        Qaterial.SnackbarManager.show({text : "Fail to start server"})
                 }
             }
         }
