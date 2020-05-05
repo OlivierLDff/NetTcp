@@ -16,7 +16,7 @@ import NetTcp 1.0 as NetTcp
 Column
 {
     id: root
-    property NetTcp.AbstractSocket object: null
+    property NetTcp.Socket object: null
     Qaterial.Label
     {
         text: "isRunning : " + (root.object ? root.object.isRunning : "")

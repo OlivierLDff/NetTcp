@@ -17,7 +17,7 @@ import NetTcp.Debug 1.0 as Debug
 Column
 {
     id: root
-    property NetTcp.AbstractServer object: null
+    property NetTcp.Server object: null
     Qaterial.Label
     {
         text: "isRunning : " + (root.object ? root.object.isRunning : "")

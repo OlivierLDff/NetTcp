@@ -16,7 +16,7 @@ import NetTcp.Debug 1.0 as Debug
 Qaterial.DebugObject
 {
     id: root
-    property NetTcp.AbstractSocket object: null
+    property NetTcp.Socket object: null
     title: "" + (root.object ? root.object : "Server null")
 
     content: Debug.SocketContent
