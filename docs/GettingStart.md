@@ -6,7 +6,9 @@ nav_order: 1
 
 # 🚀 Quick Start
 
-![ClassDiagram](./ClassDiagram.svg)
+<p align="center">
+  <img src="./ClassDiagram.svg"/>
+</p>
 
 This library have 3 main classes:
 

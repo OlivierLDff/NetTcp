@@ -6,7 +6,9 @@ A `Socket` can also be used on client side to connect to a remote server.
 
 ## Overview
 
-![ClassDiagram](./docs/ClassDiagram.svg)
+<p align="center">
+  <img src="./docs/ClassDiagram.svg"/>
+</p>
 
 Checkout the documentation to learn how to use NetTcp:
 

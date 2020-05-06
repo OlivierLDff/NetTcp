@@ -12,7 +12,9 @@ A `Socket` can also be used on client side to connect to a `Server`.
 
 ## Overview
 
-![ClassDiagram](./ClassDiagram.svg)
+<p align="center">
+  <img src="./ClassDiagram.svg"/>
+</p>
 
 * Learn how to create a [Client](https://olivierldff.github.io/NetTcp/GettingStart.html#create-a-client) and a [Server](https://olivierldff.github.io/NetTcp/GettingStart.html#create-a-server).
 * Checkout [Examples](https://olivierldff.github.io/NetTcp/GettingStart.html#examples).
