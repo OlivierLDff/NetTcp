@@ -9,7 +9,7 @@ import QtQuick 2.12
 // Backend
 import Qaterial 1.0 as Qaterial
 import Stringify.Validator 1.0 as StringifyValidator
-import Stringify.Formatter 1.0 as StringifyFormatter
+import Stringify.Formatter 1.0 as Formatter
 
 // Debug
 import NetTcp 1.0 as NetTcp
@@ -134,13 +134,13 @@ Column
         spacing: 10
         Qaterial.Label
         {
-            text: "rx/s : " + StringifyFormatter.Data.formatBytes(root.object ? root.object.rxBytesPerSeconds : 0)
+            text: "rx/s : " + Formatter.Data.formatBytes(root.object ? root.object.rxBytesPerSeconds : "")
             textType: Qaterial.Style.TextType.Caption
         }
 
         Qaterial.Label
         {
-            text: "tx/s : " + StringifyFormatter.Data.formatBytes(root.object ? root.object.txBytesPerSeconds : 0)
+            text: "tx/s : " + Formatter.Data.formatBytes(root.object ? root.object.txBytesPerSeconds : "")
             textType: Qaterial.Style.TextType.Caption
         }
     } // Row
@@ -151,13 +151,13 @@ Column
 
         Qaterial.Label
         {
-            text: "rx : " + StringifyFormatter.Data.formatBytes(root.object ? root.object.rxBytesTotal : 0)
+            text: "rx : " + Formatter.Data.formatBytes(root.object ? root.object.rxBytesTotal : "")
             textType: Qaterial.Style.TextType.Caption
         }
 
         Qaterial.Label
         {
-            text: "tx : " + StringifyFormatter.Data.formatBytes(root.object ? root.object.txBytesTotal : 0)
+            text: "tx : " + Formatter.Data.formatBytes(root.object ? root.object.txBytesTotal : "")
             textType: Qaterial.Style.TextType.Caption
         }
     } // Row
