@@ -122,6 +122,7 @@ void SocketWorker::closeSocket()
         disconnect(this, nullptr, _socket.get(), nullptr);
         disconnect(_socket.get(), nullptr, this, nullptr);
         _socket->close();
+        // very important to deleteLater here, because this function is often call from DirectConnect slot connected to socket
         _socket.release()->deleteLater();
     }
 }
@@ -257,7 +258,7 @@ void SocketWorker::closeAndRestart()
 
     // Don't restart again
     if(_watchdog && (_watchdog->remainingTime() > 0) &&
-        _watchdog->remainingTime() < int(_watchdogPeriod))
+        _watchdog->remainingTime() <= int(_watchdogPeriod))
     {
         LOG_INFO("Socket Restart timer is already running. Remaining time "
                  "before restart : {} ms",
