@@ -119,9 +119,9 @@ void SocketWorker::closeSocket()
             LOG_DEV_INFO("Close socket worker {}:{}", qPrintable(_address),
                 signed(_port));
         }
+        _socket->close();
         disconnect(this, nullptr, _socket.get(), nullptr);
         disconnect(_socket.get(), nullptr, this, nullptr);
-        _socket->close();
         // very important to deleteLater here, because this function is often call from DirectConnect slot connected to socket
         _socket.release()->deleteLater();
     }
@@ -267,10 +267,20 @@ void SocketWorker::closeAndRestart()
     }
 
     closeSocket();
+
+    // Can't restart a socket descriptor based socket
+    // Just need to wait for the parent to kill it
+    if(_socketDescriptor)
+    {
+        LOG_DEV_DEBUG("Don't start watchdog for worker, because it have been "
+                     "created with a socketDescriptor. Please kill this socket worker from owner");
+        return;
+    }
+
     if(!_watchdog)
     {
-        LOG_DEV_DEBUG("Allocate watchdog");
         _watchdog = std::make_unique<QTimer>();
+        LOG_DEV_DEBUG("Allocate watchdog {}", static_cast<void*>(_watchdog.get()));
 
         connect(_watchdog.get(), &QTimer::timeout, this,
             &SocketWorker::onWatchdogTimeout);
@@ -286,7 +296,8 @@ void SocketWorker::stopWatchdog() { _watchdog = nullptr; }
 
 void SocketWorker::startBytesCounter()
 {
-    Q_ASSERT(_bytesCounterTimer.get() == nullptr);
+    // Should only be called if _bytesCounterTimer is nullptr
+    Q_ASSERT(!_bytesCounterTimer);
 
     _bytesCounterTimer = std::make_unique<QTimer>();
     _bytesCounterTimer->setSingleShot(false);
