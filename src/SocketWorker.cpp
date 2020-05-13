@@ -52,13 +52,10 @@ SocketWorker::~SocketWorker() = default;
 void SocketWorker::onStart()
 {
     if(_socketDescriptor)
-    {
         LOG_DEV_INFO("Start worker {}", std::uintptr_t(_socketDescriptor));
-    }
     else
-    {
         LOG_DEV_INFO("Start worker {}:{}", qPrintable(_address), signed(_port));
-    }
+
     Q_ASSERT(!_socket);
     _socket = std::make_unique<QTcpSocket>(this);
     if(_socketDescriptor)
@@ -73,9 +70,8 @@ void SocketWorker::onStart()
         }
     }
     else
-    {
         _socket->connectToHost(_address, _port);
-    }
+
     _isRunning = true;
 
     connect(_socket.get(),
@@ -108,30 +104,38 @@ void SocketWorker::onStop()
 
 void SocketWorker::closeSocket()
 {
-    if(_socket)
-    {
-        if(_socketDescriptor)
-        {
-            LOG_DEV_INFO("Close socket worker {}", _socketDescriptor);
-        }
-        else
-        {
-            LOG_DEV_INFO("Close socket worker {}:{}", qPrintable(_address),
-                signed(_port));
-        }
-        _socket->close();
-        disconnect(this, nullptr, _socket.get(), nullptr);
-        disconnect(_socket.get(), nullptr, this, nullptr);
-        // very important to deleteLater here, because this function is often call from DirectConnect slot connected to socket
-        _socket.release()->deleteLater();
-    }
+    if(!_socket)
+        return;
+
+    // Avoid nested call (with onDisconnected)
+    if(_pendingClosing)
+        return;
+    _pendingClosing = true;
+
+    if(_socketDescriptor)
+        LOG_DEV_INFO("Close socket worker {}", _socketDescriptor);
+    else
+        LOG_DEV_INFO(
+            "Close socket worker {}:{}", qPrintable(_address), signed(_port));
+
+    Q_ASSERT(_socket);
+    disconnect(this, nullptr, _socket.get(), nullptr);
+    disconnect(_socket.get(), nullptr, this, nullptr);
+    onDisconnected();
+    _socket->close();
+
+    LOG_DEV_INFO("Delete later closed socket {}", static_cast<void*>(_socket.get()));
+    // very important to deleteLater here, because this function is often call from DirectConnect slot connected to socket
+    _socket.release()->deleteLater();
+
+    _pendingClosing = false;
 }
 
-size_t SocketWorker::write(const uint8_t* buffer, const size_t length)
+std::size_t SocketWorker::write(const std::uint8_t* buffer, const std::size_t length)
 {
     if(!_socket)
     {
-        LOG_DEV_ERR("Fail to write to null socket");
+        LOG_DEV_WARN("Fail to write to null socket. Check it with isConnected()");
         return false;
     }
     if(!_socket->isValid())
@@ -152,9 +156,9 @@ size_t SocketWorker::write(const uint8_t* buffer, const size_t length)
     return bytesWritten;
 }
 
-size_t SocketWorker::write(const char* buffer, const size_t length)
+std::size_t SocketWorker::write(const char* buffer, const std::size_t length)
 {
-    return write(reinterpret_cast<const uint8_t*>(buffer), length);
+    return write(reinterpret_cast<const std::uint8_t*>(buffer), length);
 }
 
 void SocketWorker::onSocketError(const QAbstractSocket::SocketError e)
@@ -185,6 +189,12 @@ void SocketWorker::onSocketStateChanged(
 
 void SocketWorker::onConnected()
 {
+    // Avoid nested call with connections
+    if(_isConnected)
+        return;
+    _isConnected = true;
+
+    Q_ASSERT(_socket);
     stopWatchdog();
     LOG_INFO("Socket is connected to {}:{}",
         qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
@@ -199,8 +209,16 @@ void SocketWorker::onConnected()
 
 void SocketWorker::onDisconnected()
 {
-    LOG_INFO("Socket disconnected from {}:{}",
-        qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
+    // Avoid nested call with connections
+    if(!_isConnected)
+        return;
+    _isConnected = false;
+
+    if(_socket)
+    {
+        LOG_INFO("Socket disconnected from {}:{}",
+            qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
+    }
     Q_EMIT connectionChanged(false);
     if(!_socketDescriptor)
         closeAndRestart();
@@ -208,28 +226,31 @@ void SocketWorker::onDisconnected()
     stopBytesCounter();
 }
 
-void SocketWorker::onDataAvailable()
-{
-    LOG_DEV_WARN("You need to override onDataAvailable");
-}
-
 bool SocketWorker::isConnected() const
 {
     return _socket && _socket->state() == QAbstractSocket::ConnectedState;
 }
 
-size_t SocketWorker::bytesAvailable() const
+void SocketWorker::onDataAvailable()
+{
+    LOG_DEV_WARN("You need to override onDataAvailable");
+}
+
+std::size_t SocketWorker::bytesAvailable() const
 {
     return _socket ? _socket->bytesAvailable() : 0;
 }
 
-size_t SocketWorker::read(uint8_t* data, size_t maxLen)
+std::size_t SocketWorker::read(std::uint8_t* data, std::size_t maxLen)
 {
     return read(reinterpret_cast<char*>(data), maxLen);
 }
 
-size_t SocketWorker::read(char* data, size_t maxLen)
+std::size_t SocketWorker::read(char* data, std::size_t maxLen)
 {
+    if(!_socket)
+        LOG_DEV_WARN("Don't call read when socket is null. Check with isConnected().");
+
     const auto byteRead = _socket ? _socket->read(data, maxLen) : 0;
     _rxBytesCounter += byteRead;
     return byteRead;
@@ -296,6 +317,10 @@ void SocketWorker::stopWatchdog() { _watchdog = nullptr; }
 
 void SocketWorker::startBytesCounter()
 {
+    if(_bytesCounterTimer)
+    {
+        LOG_DEV_ERR("_bytesCounterTimer is valid at startBytesCounter called");
+    }
     // Should only be called if _bytesCounterTimer is nullptr
     Q_ASSERT(!_bytesCounterTimer);
 

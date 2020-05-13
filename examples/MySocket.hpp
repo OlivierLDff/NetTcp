@@ -15,6 +15,7 @@ protected:
 
 Q_SIGNALS:
     void sendString(const QString& s);
+    void sendErrorString();
     void stringReceived(const QString& s);
 };
 #endif

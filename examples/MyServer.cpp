@@ -8,7 +8,10 @@ net::tcp::Socket* MyServer::newSocket(QObject* parent)
     connect(socket, &MySocket::stringReceived, this,
         [this, socket](const QString& string)
         {
-            Q_EMIT socket->sendString(string);
+            if(sendError)
+                Q_EMIT socket->sendErrorString();
+            else
+                Q_EMIT socket->sendString(string);
             Q_EMIT stringReceived(
                 string, socket->peerAddress(), socket->peerPort());
         });

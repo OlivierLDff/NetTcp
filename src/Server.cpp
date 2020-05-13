@@ -197,10 +197,11 @@ bool Server::startWorker()
 bool Server::stopWorker()
 {
     // Destroy every clients
-    for(const auto it: *this)
+    for(const auto client: *this)
     {
-        disconnect(it, nullptr, this, nullptr);
-        it->stop();
+        LOG_INFO("Destroy client {}:{}", client->peerAddress().toStdString(), client->peerPort());
+        disconnect(client, nullptr, this, nullptr);
+        client->stop();
     }
 
     // Close the server

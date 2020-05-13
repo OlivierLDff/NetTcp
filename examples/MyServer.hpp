@@ -8,6 +8,7 @@ class MyServer : public net::tcp::Server
     Q_OBJECT
 public:
     bool multiThreaded = false;
+    bool sendError = false;
 
 protected:
     net::tcp::Socket* newSocket(QObject* parent) override;

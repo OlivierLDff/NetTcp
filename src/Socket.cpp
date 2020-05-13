@@ -257,6 +257,7 @@ void Socket::killWorker()
     Q_EMIT stopWorker();
 
     LOG_DEV_INFO("Disconnect Worker [{}]", static_cast<void*>(_worker.get()));
+    Q_ASSERT(_worker.get());
     disconnect(_worker.get(), nullptr, this, nullptr);
     disconnect(this, nullptr, _worker.get(), nullptr);
 

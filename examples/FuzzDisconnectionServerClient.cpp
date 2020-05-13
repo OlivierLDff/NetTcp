@@ -51,6 +51,7 @@ public:
         appLog->info("Init application");
 
         server.multiThreaded = multiThreaded;
+        server.sendError = true;
 
         // Send Echo counter every seconds
         QObject::connect(&timer, &QTimer::timeout,
@@ -58,24 +59,10 @@ public:
             {
                 if(client.isConnected())
                 {
+                    clientLog->info("Send {}", (counter + 1));
                     Q_EMIT client.sendString(
                         "Echo " + QString::number(counter++));
                 }
-            });
-        // Print the message that echoed from server socket
-        QObject::connect(&client, &MySocket::stringReceived,
-            [this](const QString value)
-            {
-                clientLog->info("Rx \"{}\" from server {}:{}",
-                    qPrintable(value), qPrintable(client.peerAddress()),
-                    signed(client.peerPort()));
-            });
-        // Print the message that received from client socket
-        QObject::connect(&server, &MyServer::stringReceived,
-            [](const QString value, const QString address, const quint16 port)
-            {
-                serverLog->info("Rx \"{}\" from server {}:{}",
-                    qPrintable(value), qPrintable(address), port);
             });
 
         QObject::connect(&server, &net::tcp::Server::isRunningChanged,
@@ -116,6 +103,7 @@ public:
         // server.start(port) can be called to listen from every interfaces
         server.start(ip, port);
 
+        client.setWatchdogPeriod(1);
         client.setUseWorkerThread(multiThreaded);
         clientLog->info("Start client to connect to address {}, on port {}",
             qPrintable(ip), signed(port));

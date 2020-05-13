@@ -70,3 +70,11 @@ void MySocketWorker::onSendString(const QString& s)
     if(!write(data.c_str(), size))
         return closeAndRestart();
 }
+
+void MySocketWorker::onSendErrorString()
+{
+    // Invalid string size
+    quint8 size = uint8_t(240);
+    if(!write(&size, 1))
+        return closeAndRestart();
+}

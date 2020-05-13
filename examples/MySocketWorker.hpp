@@ -25,6 +25,7 @@ private:
 
 public Q_SLOTS:
     void onSendString(const QString& s);
+    void onSendErrorString();
 Q_SIGNALS:
     void stringAvailable(const QString& s);
 };

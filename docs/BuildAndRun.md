@@ -50,6 +50,12 @@ cmake --build . --target NetTcp_EchoClientServer
 ./NetTcp_EchoClientServer
 ```
 
+Available examples are :
+* `NetTcp_EchoClientServer` : Demonstrate a client that a string to a server. Server answer with the same string.
+* `NetTcp_EchoClient`: Only the client part of `NetTcp_EchoClientServer`.
+* `NetTcp_EchoServer`: Only the server part of `NetTcp_EchoClientServer`.`NetTcp_FuzzDisconnectionClientServer`: Send error string from client to server, and test that server handle ok the disconnection. This help to profile memory leaks and thread issues. (run with `-t`).
+* `NetTcp_FuzzDisconnectionServerClient`: Reply error string from server to client.
+
 ## Additional CMake flags
 
 Since CMake is using `FetchContent` functionality, you can add flags to understand what is going on. The library also require Qt, so you need to indicate where Qt SDK is installed. Provide the path with `CMAKE_PREFIX_PATH`.

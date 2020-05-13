@@ -33,6 +33,10 @@ public:
     // ──────── ATTRIBUTES ────────
 private:
     bool _isRunning = false;
+    // Use to avoid multiple call to onConnected/onDisconnected
+    bool _isConnected = false;
+    // Use to avoid nested call of closeSocket()
+    bool _pendingClosing = false;
     quintptr _socketDescriptor = 0;
     QString _address;
     quint16 _port = 0;
@@ -47,18 +51,18 @@ public Q_SLOTS:
 
     // ──────── WRITE API ────────
 public:
-    size_t write(const uint8_t* buffer, const size_t length);
-    size_t write(const char* buffer, const size_t length);
+    std::size_t write(const std::uint8_t* buffer, const std::size_t length);
+    std::size_t write(const char* buffer, const std::size_t length);
 
     // ──────── READ API ────────
-public Q_SLOTS:
-    virtual void onDataAvailable();
+protected Q_SLOTS:
     bool isConnected() const;
+    virtual void onDataAvailable();
 
 public:
-    size_t bytesAvailable() const;
-    size_t read(uint8_t* data, size_t maxLen);
-    size_t read(char* data, size_t maxLen);
+    std::size_t bytesAvailable() const;
+    std::size_t read(std::uint8_t* data, std::size_t maxLen);
+    std::size_t read(char* data, std::size_t maxLen);
 
     // ──────── COMMUNICATION TO SOCKET ────────
 protected Q_SLOTS:
