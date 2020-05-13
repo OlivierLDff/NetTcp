@@ -55,7 +55,7 @@ bool Socket::setPeerAddress(const QString& value)
 {
     if(ISocket::setPeerAddress(value))
     {
-        if(!socketDescriptor())
+        if(!socketDescriptor() && isRunning())
         {
             LOG_INFO("Peer Address is {}. Restart the worker for update.",
                 value.toStdString());
@@ -74,7 +74,7 @@ bool Socket::setPeerPort(const quint16& value)
 {
     if(ISocket::setPeerPort(value))
     {
-        if(!socketDescriptor())
+        if(!socketDescriptor() && isRunning())
         {
             LOG_INFO("Peer Port is {}. Restart the worker for update.",
                 static_cast<std::uint16_t>(value));
@@ -93,10 +93,13 @@ bool Socket::setUseWorkerThread(const bool& value)
 {
     if(ISocket::setUseWorkerThread(value))
     {
-        LOG_INFO("Restart worker because {}",
-            value ? "it use it's own thread now" :
-                    "it's not using it's own thread anymore");
-        restart();
+        if(isRunning())
+        {
+            LOG_INFO("Restart worker because {}",
+                value ? "it use it's own thread now" :
+                        "it's not using it's own thread anymore");
+            restart();
+        }
         return true;
     }
     return false;
