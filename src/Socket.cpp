@@ -173,7 +173,12 @@ bool Socket::start()
     connect(
         _worker.get(), &SocketWorker::bytesSent, this, &Socket::onBytesSent);
     connect(this, &Socket::startWorker, _worker.get(), &SocketWorker::onStart);
-    connect(this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop);
+    if(useWorkerThread())
+        connect(this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop,
+            Qt::BlockingQueuedConnection);
+    else
+        connect(
+            this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop, Qt::DirectConnection);
     connect(this, &Socket::watchdogPeriodChanged, _worker.get(),
         &SocketWorker::onWatchdogPeriodChanged);
 
@@ -201,15 +206,12 @@ bool Socket::start(const QString& host, const quint16 port)
 
 bool Socket::stop()
 {
-    LOG_INFO("Stop worker");
-
-    resetConnected();
-    resetRunning();
+    killWorker();
     resetTxBytesPerSeconds();
     resetRxBytesPerSeconds();
 
-    Q_EMIT stopWorker();
-    killWorker();
+    resetConnected();
+    resetRunning();
 
     return true;
 }
@@ -220,7 +222,8 @@ bool Socket::restart()
     {
         LOG_INFO("Restart");
         stop();
-        return start();
+        if(!socketDescriptor())
+            return start();
     }
     return false;
 }
@@ -247,21 +250,30 @@ void Socket::clearCounters()
 
 void Socket::killWorker()
 {
+    if(!_worker)
+        return;
+
+    LOG_DEV_INFO("Stop Worker [{}]", static_cast<void*>(_worker.get()));
+    Q_EMIT stopWorker();
+
+    LOG_DEV_INFO("Disconnect Worker [{}]", static_cast<void*>(_worker.get()));
+    disconnect(_worker.get(), nullptr, this, nullptr);
+    disconnect(this, nullptr, _worker.get(), nullptr);
+
     if(_workerThread)
     {
-        LOG_INFO("Kill Worker thread and worker");
+        // Ask to delete later in the event loop
+        LOG_DEV_INFO("Kill worker thread ...");
         _workerThread->exit();
         _workerThread->wait();
         _workerThread = nullptr;
         _worker = nullptr;
+        LOG_DEV_INFO("... Done");
     }
     else if(_worker)
     {
-        LOG_INFO("Kill Worker");
-        const auto workerPtr = _worker.release();
-        disconnect(workerPtr, nullptr, this, nullptr);
-        disconnect(this, nullptr, workerPtr, nullptr);
-        workerPtr->deleteLater();
+        LOG_DEV_INFO("Delete worker [{}] later", static_cast<void*>(_worker.get()));
+        _worker.release()->deleteLater();
     }
 }
 
