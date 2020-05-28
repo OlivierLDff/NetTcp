@@ -110,6 +110,36 @@ Column
         })
     }
 
+    Qaterial.Label
+    {
+        text: "clients : " + (root.object ? root.object.count : "")
+        width: parent.width
+        elide: Text.ElideRight
+        textType: Qaterial.Style.TextType.Caption
+    }
+
+    Qaterial.FlatButton
+    {
+        topInset: 0
+        bottomInset: 0
+        textType: Qaterial.Style.TextType.Caption
+        highlighted: false
+        backgroundImplicitHeight: 20
+        text: "maxClientCount : " + (root.object ? root.object.maxClientCount : "")
+        onClicked: if(root.object) Qaterial.DialogManager.openTextField({
+            acceptedCallback: function(result, acceptableInput)
+            {
+                root.object.maxClientCount = result
+            },
+            text: root.object.maxClientCount,
+            title: qsTr("Enter Max Client Count"),
+            textTitle: qsTr("maxClientCount"),
+            inputMethodHints: Qt.ImhFormattedNumbersOnly,
+            selectAllText: true,
+            standardButtons: Qaterial.Dialog.Cancel | Qaterial.Dialog.Yes
+        })
+    }
+
     Row
     {
         Qaterial.FlatButton

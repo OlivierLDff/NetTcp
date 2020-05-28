@@ -51,6 +51,9 @@ public Q_SLOTS:
         const QString& address, const quint16 port) override final;
     void disconnectFrom(const QString& address) override final;
 
+protected:
+    virtual bool canAcceptNewClient() const;
+
     // ──────── CUSTOM SOCKET API ────────
 protected:
     virtual class Socket* newSocket(QObject* parent);

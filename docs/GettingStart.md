@@ -205,6 +205,7 @@ Let's create a custom server than can receive strings for multiple clients. Beca
 Let's create a `MyServer` that create `MySocket` for each client that connect. When a string is received by the server, the message is echoed to the client.
 
 * Override `net::tcp::AbstractSocket* newTcpSocket(QObject* parent)` to create a new socket each time a client connects.
+* Override `bool canAcceptNewClient()` to give condition to accept a client.
 
 ```cpp
 class MyServer : public net::tcp::Server
@@ -220,6 +221,15 @@ protected:
                 Q_EMIT s->sendString(string);
             });
         return s;
+    }
+
+    bool canAcceptNewClient() const
+    {
+        if(!::net::tcp::Server::canAcceptNewClient())
+            return false;
+
+        // Do your business here
+        return true;
     }
 };
 ```

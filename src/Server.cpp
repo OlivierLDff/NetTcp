@@ -8,6 +8,7 @@
 
 // Qt Headers
 #include <QTimer>
+#include <QTcpSocket>
 
 // ───── DECLARATION ─────
 
@@ -61,6 +62,19 @@ Server::Server(QObject* parent) :
             }
 
             LOG_INFO("Incoming new connection detected");
+
+            if(!canAcceptNewClient())
+            {
+                auto* socket = new QTcpSocket(this);
+                socket->setSocketDescriptor(handle);
+                const auto peerAddress = socket->peerAddress().toString();
+                const auto peerPort = socket->peerPort();
+                LOG_INFO("Refuse connection of client {}:{}",
+                    peerAddress.toStdString(), peerPort);
+                Q_EMIT clientRefused(peerAddress, peerPort);
+                socket->close();
+                socket->deleteLater();
+            }
 
             auto socket = newSocket(this);
             socket->setUseWorkerThread(useWorkerThread());
@@ -199,7 +213,8 @@ bool Server::stopWorker()
     // Destroy every clients
     for(const auto client: *this)
     {
-        LOG_INFO("Destroy client {}:{}", client->peerAddress().toStdString(), client->peerPort());
+        LOG_INFO("Destroy client {}:{}", client->peerAddress().toStdString(),
+            client->peerPort());
         disconnect(client, nullptr, this, nullptr);
         client->stop();
     }
@@ -319,3 +334,5 @@ void Server::disconnectFrom(const QString& address)
 {
     remove(getSockets(address));
 }
+
+bool Server::canAcceptNewClient() const { return count() < maxClientCount(); }

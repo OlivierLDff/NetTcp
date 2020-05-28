@@ -39,6 +39,9 @@ protected:
     NETTCP_PROPERTY(quint16, port, Port);
     NETTCP_PROPERTY(bool, useWorkerThread, UseWorkerThread);
 
+    // Max count of clients that are allowed
+    NETTCP_PROPERTY_D(int, maxClientCount, MaxClientCount, 32);
+
     // ──────── C++ API ────────
 public Q_SLOTS:
     virtual bool start() = 0;
@@ -58,6 +61,7 @@ Q_SIGNALS:
     void acceptError(int error, const QString description);
     void newClient(const QString& address, const quint16 port);
     void clientLost(const QString& address, const quint16 port);
+    void clientRefused(const QString& address, const quint16 port);
 };
 
 }
