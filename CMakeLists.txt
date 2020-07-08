@@ -10,14 +10,6 @@
 
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-# DEPENDENCIES
-
-set(QOLM_REPOSITORY "https://github.com/OlivierLDff/QOlm" CACHE STRING "Repository of QOlm")
-set(QOLM_TAG "master" CACHE STRING "Git tag/branch of QOlm")
-
-set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog" CACHE STRING "Repository of spdlog")
-set(SPDLOG_TAG "v1.x" CACHE STRING "Git tag/branch of spdlog")
-
 # ┌──────────────────────────────────────────────────────────────────┐
 # │                       PROJECT SETTINGS                           │
 # └──────────────────────────────────────────────────────────────────┘
@@ -48,6 +40,11 @@ set(NETTCP_VERSION ${NETTCP_VERSION_MAJOR}.${NETTCP_VERSION_MINOR}.${NETTCP_VERS
 
 set(NETTCP_BUILD_SHARED OFF CACHE BOOL "Build as a shared library (ON) or as static (OFF)")
 set(NETTCP_FOLDER_PREFIX ${NETTCP_PROJECT} CACHE STRING "Prefix folder for all NetTcp generated targets in generated project (only decorative)")
+
+set(NETTCP_ENABLE_PCH ON CACHE BOOL
+ "Enable precompile headers support for 'NetTcp'. \"
+ Only work if CMake support 'target_precompile_headers'. \"
+ This can speed up compilation time.")
 
 set(NETTCP_ENABLE_QML ON CACHE BOOL "Embedded Debug Qml module for NetTcp class")
 
@@ -82,39 +79,21 @@ endif(NETTCP_ENABLE_INSTALL)
 message(STATUS "---------------- DONE WITH OPTIONS. -----------------")
 
 # ┌──────────────────────────────────────────────────────────────────┐
-# │                         QT5 CMAKE                                │
-# └──────────────────────────────────────────────────────────────────┘
-
-find_package(Qt5Core    CONFIG REQUIRED)
-find_package(Qt5Qml     CONFIG REQUIRED)
-find_package(Qt5Network CONFIG REQUIRED)
-
-if(NETTCP_ENABLE_QML)
-  find_package(Qt5QuickCompiler CONFIG REQUIRED)
-endif()
-# NETTCP_ENABLE_QML
-
-# ┌──────────────────────────────────────────────────────────────────┐
 # │                       DEPENDENCIES                               │
 # └──────────────────────────────────────────────────────────────────┘
 
-include(FetchContent)
+find_package(Qt5 REQUIRED COMPONENTS
+  Core
+  Qml
+  Network
+)
 
-# QOlm
-FetchContent_Declare(
-  QOlm
-  GIT_REPOSITORY ${QOLM_REPOSITORY}
-  GIT_TAG        ${QOLM_TAG}
-  )
+if(NETTCP_ENABLE_QML)
+  find_package(Qt5 REQUIRED COMPONENTS QuickCompiler)
+endif()
 
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY ${SPDLOG_REPOSITORY}
-  GIT_TAG        ${SPDLOG_TAG}
-  )
-
-# Make all dependencies avaiables
-FetchContent_MakeAvailable(spdlog QOlm)
+include(cmake/FetchSpdlog.cmake)
+include(cmake/FetchQOlm.cmake)
 
 # ┌──────────────────────────────────────────────────────────────────┐
 # │                          NETTCP                                  │
@@ -231,6 +210,10 @@ target_link_libraries(${NETTCP_TARGET} PUBLIC
   Qt5::Network
   )
 set_target_properties(${NETTCP_TARGET} PROPERTIES FOLDER ${NETTCP_FOLDER_PREFIX})
+
+if(NETUDP_ENABLE_PCH AND COMMAND target_precompile_headers)
+  target_precompile_headers(${NETTCP_TARGET} PRIVATE ${NETTCP_PRIVATE_INCS_FOLDER}/Pch/Pch.hpp)
+endif()
 
 # Version
 target_compile_definitions(${NETTCP_TARGET} PRIVATE -DNETTCP_VERSION_MAJOR=${NETTCP_VERSION_MAJOR})
