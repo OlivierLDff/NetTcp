@@ -263,7 +263,7 @@ bool Server::start()
         LOG_DEV_ERR("Fail to start tcp server that is already running");
         return false;
     }
-    LOG_INFO("Start Server");
+    LOG_INFO("Start Server on {}:{}", address().toStdString(), port());
 
     setRunning(true);
     tryStart();
