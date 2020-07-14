@@ -211,7 +211,7 @@ target_link_libraries(${NETTCP_TARGET} PUBLIC
   )
 set_target_properties(${NETTCP_TARGET} PROPERTIES FOLDER ${NETTCP_FOLDER_PREFIX})
 
-if(NETUDP_ENABLE_PCH AND COMMAND target_precompile_headers)
+if(NETTCP_ENABLE_PCH AND COMMAND target_precompile_headers)
   target_precompile_headers(${NETTCP_TARGET} PRIVATE ${NETTCP_PRIVATE_INCS_FOLDER}/Pch/Pch.hpp)
 endif()
 
