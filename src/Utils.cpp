@@ -60,11 +60,9 @@ static quint8 _minor = 0;
 
 static void NetTcp_registerTypes()
 {
-    LOG_DEV_INFO("Register NetTcp v{}",
-        qPrintable(net::tcp::Version::version().readable()));
+    LOG_DEV_INFO("Register NetTcp v{}", qPrintable(net::tcp::Version::version().readable()));
 
-    LOG_DEV_INFO(
-        "Register Singleton {}.Version {}.{} to QML", *_uri, _major, _minor);
+    LOG_DEV_INFO("Register Singleton {}.Version {}.{} to QML", *_uri, _major, _minor);
     net::tcp::Version::registerSingleton(*_uri, _major, _minor);
 
     LOG_DEV_INFO("Register {}.Server {}.{} to QML", *_uri, _major, _minor);
@@ -77,8 +75,7 @@ static void NetTcp_registerTypes()
     qRegisterMetaType<QAbstractSocket::SocketState>();
 }
 
-static void NetTcp_registerTypes(
-    const char* uri, const quint8 major, const quint8 minor)
+static void NetTcp_registerTypes(const char* uri, const quint8 major, const quint8 minor)
 {
     if(uri)
         _uri = &uri;
@@ -89,8 +86,7 @@ static void NetTcp_registerTypes(
 
 void NetTcp_loadResources()
 {
-    LOG_DEV_INFO("Load NetTcp.qrc v{}",
-        qPrintable(net::tcp::Version::version().readable()));
+    LOG_DEV_INFO("Load NetTcp.qrc v{}", qPrintable(net::tcp::Version::version().readable()));
     Q_INIT_RESOURCE(NetTcp);
 }
 
@@ -101,10 +97,9 @@ Q_COREAPP_STARTUP_FUNCTION(NetTcp_loadResources)
 
 using namespace net::tcp;
 
-void Utils::registerTypes(
-    const char* uri, const quint8 major, const quint8 minor)
+void net::tcp::registerQmlTypes(const char* uri, const quint8 major, const quint8 minor)
 {
     ::NetTcp_registerTypes(uri, major, minor);
 }
 
-void Utils::loadResources() { ::NetTcp_loadResources(); }
+void net::tcp::loadQmlResources() { ::NetTcp_loadResources(); }

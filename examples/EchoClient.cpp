@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
     // ────────── APPLICATION ──────────────────────────────────────
 
     // Register types for to use SharedDatagram in signals
-    net::tcp::Utils::registerTypes();
+    net::tcp::registerQmlTypes();
 
     // Create the app and start it
     App echo;

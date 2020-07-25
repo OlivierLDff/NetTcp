@@ -287,9 +287,9 @@ To use the type from qml you need to register them. **NetTcp** also provide a qm
 
 ```c++
 // Register types to QML
-net::tcp::Utils::registerTypes();
+net::tcp::registerQmlTypes();
 // Load NetTcp.qrc
-net::tcp::Utils::loadResources();
+net::tcp::loadQmlResources();
 ```
 
 ## Examples
