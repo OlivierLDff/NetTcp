@@ -175,6 +175,11 @@ void SocketWorker::onSocketError(const QAbstractSocket::SocketError e)
     }
     Q_EMIT socketError(int(e),
         _socket ? _socket->errorString() : QStringLiteral("Invalid Socket"));
+
+    if(e == QAbstractSocket::SocketError::ConnectionRefusedError)
+    {
+        closeAndRestart();
+    }
 }
 
 void SocketWorker::onSocketStateChanged(
