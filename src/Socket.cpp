@@ -267,8 +267,8 @@ void Socket::killWorker()
         LOG_DEV_INFO("Kill worker thread ...");
         _workerThread->exit();
         _workerThread->wait();
-        _workerThread = nullptr;
-        _worker = nullptr;
+        _workerThread.release()->deleteLater();
+        _worker.release()->deleteLater();
         LOG_DEV_INFO("... Done");
     }
     else if(_worker)
