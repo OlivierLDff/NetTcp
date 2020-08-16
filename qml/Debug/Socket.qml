@@ -17,7 +17,7 @@ Qaterial.DebugObject
 {
     id: root
     property NetTcp.Socket object: null
-    title: "" + (root.object ? root.object : "Server null")
+    title: "" + (root.object ? root.object : "Socket null")
 
     content: Debug.SocketContent
     {
