@@ -74,6 +74,7 @@ Server::Server(QObject* parent) :
                 Q_EMIT clientRefused(peerAddress, peerPort);
                 socket->close();
                 socket->deleteLater();
+                return;
             }
 
             auto socket = newSocket(this);
