@@ -74,17 +74,16 @@ void SocketWorker::onStart()
 
     _isRunning = true;
 
-    connect(_socket.get(),
-        QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
-        this, &SocketWorker::onSocketError);
-    connect(_socket.get(), &QTcpSocket::stateChanged, this,
-        &SocketWorker::onSocketStateChanged);
-    connect(_socket.get(), &QTcpSocket::connected, this,
-        &SocketWorker::onConnected);
-    connect(_socket.get(), &QTcpSocket::disconnected, this,
-        &SocketWorker::onDisconnected);
-    connect(_socket.get(), &QTcpSocket::readyRead, this,
-        &SocketWorker::onDataAvailable);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(_socket.get(), QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this,
+        &SocketWorker::onSocketError);
+#else
+    connect(_socket.get(), &QAbstractSocket::errorOccurred, this, &SocketWorker::onSocketError);
+#endif
+    connect(_socket.get(), &QTcpSocket::stateChanged, this, &SocketWorker::onSocketStateChanged);
+    connect(_socket.get(), &QTcpSocket::connected, this, &SocketWorker::onConnected);
+    connect(_socket.get(), &QTcpSocket::disconnected, this, &SocketWorker::onDisconnected);
+    connect(_socket.get(), &QTcpSocket::readyRead, this, &SocketWorker::onDataAvailable);
 
     if(_socket->state() == QAbstractSocket::ConnectedState)
         onConnected();
@@ -115,8 +114,7 @@ void SocketWorker::closeSocket()
     if(_socketDescriptor)
         LOG_DEV_INFO("Close socket worker {}", _socketDescriptor);
     else
-        LOG_DEV_INFO(
-            "Close socket worker {}:{}", qPrintable(_address), signed(_port));
+        LOG_DEV_INFO("Close socket worker {}:{}", qPrintable(_address), signed(_port));
 
     Q_ASSERT(_socket);
     disconnect(this, nullptr, _socket.get(), nullptr);
@@ -144,12 +142,10 @@ std::size_t SocketWorker::write(const std::uint8_t* buffer, const std::size_t le
         return false;
     }
 
-    const auto bytesWritten =
-        _socket->write(reinterpret_cast<const char*>(buffer), length);
+    const auto bytesWritten = _socket->write(reinterpret_cast<const char*>(buffer), length);
     if(bytesWritten != length)
     {
-        LOG_ERR("Fail to write to socket, only wrote {}/{}", int(bytesWritten),
-            int(length));
+        LOG_ERR("Fail to write to socket, only wrote {}/{}", int(bytesWritten), int(length));
         closeAndRestart();
     }
     _txBytesCounter += bytesWritten;
@@ -166,15 +162,13 @@ void SocketWorker::onSocketError(const QAbstractSocket::SocketError e)
     // todo : use our own error type
     if(_socket)
     {
-        LOG_ERR("Socket Error ({}) : {}", int(e),
-            qPrintable(_socket->errorString()));
+        LOG_ERR("Socket Error ({}) : {}", int(e), qPrintable(_socket->errorString()));
     }
     else
     {
         LOG_ERR("Socket Error ({})", int(e));
     }
-    Q_EMIT socketError(int(e),
-        _socket ? _socket->errorString() : QStringLiteral("Invalid Socket"));
+    Q_EMIT socketError(int(e), _socket ? _socket->errorString() : QStringLiteral("Invalid Socket"));
 
     if(e == QAbstractSocket::SocketError::ConnectionRefusedError)
     {
@@ -182,8 +176,7 @@ void SocketWorker::onSocketError(const QAbstractSocket::SocketError e)
     }
 }
 
-void SocketWorker::onSocketStateChanged(
-    QAbstractSocket::SocketState socketState)
+void SocketWorker::onSocketStateChanged(QAbstractSocket::SocketState socketState)
 {
     LOG_INFO("New Socket state : {}", socketState);
     if(socketState == QAbstractSocket::UnconnectedState)
@@ -201,13 +194,10 @@ void SocketWorker::onConnected()
 
     Q_ASSERT(_socket);
     stopWatchdog();
-    LOG_INFO("Socket is connected to {}:{}",
-        qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
+    LOG_INFO("Socket is connected to {}:{}", qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
     Q_EMIT connectionChanged(true);
-    Q_EMIT startSuccess(_socket ? _socket->peerAddress().toString() : "",
-        _socket ? _socket->peerPort() : 0,
-        _socket ? _socket->localAddress().toString() : "",
-        _socket ? _socket->localPort() : 0);
+    Q_EMIT startSuccess(_socket ? _socket->peerAddress().toString() : "", _socket ? _socket->peerPort() : 0,
+        _socket ? _socket->localAddress().toString() : "", _socket ? _socket->localPort() : 0);
 
     startBytesCounter();
 }
@@ -221,8 +211,7 @@ void SocketWorker::onDisconnected()
 
     if(_socket)
     {
-        LOG_INFO("Socket disconnected from {}:{}",
-            qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
+        LOG_INFO("Socket disconnected from {}:{}", qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
     }
     Q_EMIT connectionChanged(false);
     if(!_socketDescriptor)
@@ -231,20 +220,11 @@ void SocketWorker::onDisconnected()
     stopBytesCounter();
 }
 
-bool SocketWorker::isConnected() const
-{
-    return _socket && _socket->state() == QAbstractSocket::ConnectedState;
-}
+bool SocketWorker::isConnected() const { return _socket && _socket->state() == QAbstractSocket::ConnectedState; }
 
-void SocketWorker::onDataAvailable()
-{
-    LOG_DEV_WARN("You need to override onDataAvailable");
-}
+void SocketWorker::onDataAvailable() { LOG_DEV_WARN("You need to override onDataAvailable"); }
 
-std::size_t SocketWorker::bytesAvailable() const
-{
-    return _socket ? _socket->bytesAvailable() : 0;
-}
+std::size_t SocketWorker::bytesAvailable() const { return _socket ? _socket->bytesAvailable() : 0; }
 
 std::size_t SocketWorker::read(std::uint8_t* data, std::size_t maxLen)
 {
@@ -283,8 +263,7 @@ void SocketWorker::closeAndRestart()
     LOG_INFO("Close and try to restart socket in {} ms", _watchdogPeriod);
 
     // Don't restart again
-    if(_watchdog && (_watchdog->remainingTime() > 0) &&
-        _watchdog->remainingTime() <= int(_watchdogPeriod))
+    if(_watchdog && (_watchdog->remainingTime() > 0) && _watchdog->remainingTime() <= int(_watchdogPeriod))
     {
         LOG_INFO("Socket Restart timer is already running. Remaining time "
                  "before restart : {} ms",
@@ -299,7 +278,7 @@ void SocketWorker::closeAndRestart()
     if(_socketDescriptor)
     {
         LOG_DEV_DEBUG("Don't start watchdog for worker, because it have been "
-                     "created with a socketDescriptor. Please kill this socket worker from owner");
+                      "created with a socketDescriptor. Please kill this socket worker from owner");
         return;
     }
 
@@ -308,14 +287,12 @@ void SocketWorker::closeAndRestart()
         _watchdog = std::make_unique<QTimer>();
         LOG_DEV_DEBUG("Allocate watchdog {}", static_cast<void*>(_watchdog.get()));
 
-        connect(_watchdog.get(), &QTimer::timeout, this,
-            &SocketWorker::onWatchdogTimeout);
+        connect(_watchdog.get(), &QTimer::timeout, this, &SocketWorker::onWatchdogTimeout);
         _watchdog->setTimerType(Qt::VeryCoarseTimer);
         _watchdog->setSingleShot(true);
     }
     _watchdog->start(_watchdogPeriod);
-    LOG_INFO("Start Watchdog to attempt reconnection in {} ms",
-        signed(_watchdogPeriod));
+    LOG_INFO("Start Watchdog to attempt reconnection in {} ms", signed(_watchdogPeriod));
 }
 
 void SocketWorker::stopWatchdog() { _watchdog = nullptr; }
@@ -332,8 +309,7 @@ void SocketWorker::startBytesCounter()
     _bytesCounterTimer = std::make_unique<QTimer>();
     _bytesCounterTimer->setSingleShot(false);
     _bytesCounterTimer->setInterval(1000);
-    connect(_bytesCounterTimer.get(), &QTimer::timeout, this,
-        &SocketWorker::updateDataCounter);
+    connect(_bytesCounterTimer.get(), &QTimer::timeout, this, &SocketWorker::updateDataCounter);
     _bytesCounterTimer->start();
 }
 
