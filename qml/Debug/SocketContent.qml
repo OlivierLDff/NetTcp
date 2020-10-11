@@ -42,7 +42,7 @@ Column
         Connections
         {
             target: root.object
-            function onSocketError() { _errorLabel.text = description }
+            function onSocketError(error, description) { _errorLabel.text = description }
             function onIsConnectedChanged() { if(isConnected) _errorLabel.text = "" }
         }
         color: "red"
