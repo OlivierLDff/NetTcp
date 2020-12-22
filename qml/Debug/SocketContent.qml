@@ -18,25 +18,23 @@ Column
 {
     id: root
     property NetTcp.Socket object: null
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         text: "isRunning : " + (root.object ? root.object.isRunning : "")
         width: parent.width
         elide: Text.ElideRight
-        textType: Qaterial.Style.TextType.Caption
         color: root.object && root.object.isRunning ? Qaterial.Style.green : Qaterial.Style.red
     }
 
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         text: "isConnected : " + (root.object ? root.object.isConnected : "")
         width: parent.width
         elide: Text.ElideRight
-        textType: Qaterial.Style.TextType.Caption
         color: root.object && root.object.isConnected ? Qaterial.Style.green : Qaterial.Style.red
     }
 
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         id: _errorLabel
         Connections
@@ -48,14 +46,13 @@ Column
         color: "red"
         width: parent.width
         elide: Text.ElideRight
-        textType: Qaterial.Style.TextType.Caption
     }
 
     Qaterial.FlatButton
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "watchdogPeriod : " + (root.object ? root.object.watchdogPeriod : "")
@@ -78,7 +75,7 @@ Column
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "peerAddress : " + (root.object ? root.object.peerAddress : "")
@@ -103,7 +100,7 @@ Column
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "peerPort : " + (root.object ? root.object.peerPort : "")
@@ -123,25 +120,22 @@ Column
         })
     }
 
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         text: "local Address : " + (root.object ? root.object.localAddress : "") + ":" + (root.object ? root.object.localPort : "")
-        textType: Qaterial.Style.TextType.Caption
     }
 
     Row
     {
         spacing: 10
-        Qaterial.Label
+        Qaterial.LabelCaption
         {
             text: "rx/s : " + Formatter.Data.formatBytes(root.object ? root.object.rxBytesPerSeconds : "")
-            textType: Qaterial.Style.TextType.Caption
         }
 
-        Qaterial.Label
+        Qaterial.LabelCaption
         {
             text: "tx/s : " + Formatter.Data.formatBytes(root.object ? root.object.txBytesPerSeconds : "")
-            textType: Qaterial.Style.TextType.Caption
         }
     } // Row
 
@@ -149,16 +143,14 @@ Column
     {
         spacing: 10
 
-        Qaterial.Label
+        Qaterial.LabelCaption
         {
             text: "rx : " + Formatter.Data.formatBytes(root.object ? root.object.rxBytesTotal : "")
-            textType: Qaterial.Style.TextType.Caption
         }
 
-        Qaterial.Label
+        Qaterial.LabelCaption
         {
             text: "tx : " + Formatter.Data.formatBytes(root.object ? root.object.txBytesTotal : "")
-            textType: Qaterial.Style.TextType.Caption
         }
     } // Row
 
@@ -169,7 +161,7 @@ Column
             topInset: 0
             bottomInset: 0
             anchors.verticalCenter: parent.verticalCenter
-            textType: Qaterial.Style.TextType.Caption
+            font: Qaterial.Style.textTheme.caption
             backgroundImplicitHeight: 20
             text: root.object && root.object.isRunning ? "Stop" : "Start"
             onClicked:
@@ -191,7 +183,7 @@ Column
             topInset: 0
             bottomInset: 0
             anchors.verticalCenter: parent.verticalCenter
-            textType: Qaterial.Style.TextType.Caption
+            font: Qaterial.Style.textTheme.caption
             backgroundImplicitHeight: 20
             text: root.object && "Restart"
             enabled: root.object && root.object.isRunning
@@ -209,8 +201,7 @@ Column
             implicitHeight: 32
             anchors.verticalCenter: parent.verticalCenter
             checked: root.object && root.object.useWorkerThread
-            elide: Text.ElideRight
-            textType: Qaterial.Style.TextType.Caption
+            font: Qaterial.Style.textTheme.caption
             onClicked: if(root.object) root.object.useWorkerThread = checked
         }
     } // Row
