@@ -41,7 +41,7 @@ Column
         {
             target: root.object
             function onSocketError(error, description) { _errorLabel.text = description }
-            function onIsConnectedChanged() { if(isConnected) _errorLabel.text = "" }
+            function onIsConnectedChanged() { if(root.object.isConnected) _errorLabel.text = "" }
         }
         color: "red"
         width: parent.width
