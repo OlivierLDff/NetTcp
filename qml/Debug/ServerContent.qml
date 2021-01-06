@@ -185,7 +185,6 @@ Column
             implicitHeight: 32
             anchors.verticalCenter: parent.verticalCenter
             checked: root.object && root.object.useWorkerThread
-            elide: Text.ElideRight
             font: Qaterial.Style.textTheme.caption
             onClicked: if(root.object) root.object.useWorkerThread = checked
         }
