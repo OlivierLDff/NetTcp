@@ -18,21 +18,19 @@ Column
 {
     id: root
     property NetTcp.Server object: null
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         text: "isRunning : " + (root.object ? root.object.isRunning : "")
         width: parent.width
         elide: Text.ElideRight
-        textType: Qaterial.Style.TextType.Caption
         color: root.object && root.object.isRunning ? Qaterial.Style.green : Qaterial.Style.red
     }
 
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         text: "isListening : " + (root.object ? root.object.isListening : "")
         width: parent.width
         elide: Text.ElideRight
-        textType: Qaterial.Style.TextType.Caption
         color: root.object && root.object.isListening ? Qaterial.Style.green : Qaterial.Style.red
     }
 
@@ -40,7 +38,7 @@ Column
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "watchdogPeriod : " + (root.object ? root.object.watchdogPeriod : "")
@@ -63,7 +61,7 @@ Column
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "address : " + (root.object ? root.object.address : "")
@@ -90,7 +88,7 @@ Column
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "port : " + (root.object ? root.object.port : "")
@@ -110,19 +108,18 @@ Column
         })
     }
 
-    Qaterial.Label
+    Qaterial.LabelCaption
     {
         text: "clients : " + (root.object ? root.object.count : "")
         width: parent.width
         elide: Text.ElideRight
-        textType: Qaterial.Style.TextType.Caption
     }
 
     Qaterial.FlatButton
     {
         topInset: 0
         bottomInset: 0
-        textType: Qaterial.Style.TextType.Caption
+        font: Qaterial.Style.textTheme.caption
         highlighted: false
         backgroundImplicitHeight: 20
         text: "maxClientCount : " + (root.object ? root.object.maxClientCount : "")
@@ -147,7 +144,7 @@ Column
             topInset: 0
             bottomInset: 0
             anchors.verticalCenter: parent.verticalCenter
-            textType: Qaterial.Style.TextType.Caption
+            font: Qaterial.Style.textTheme.caption
             backgroundImplicitHeight: 20
             text: root.object && root.object.isRunning ? "Stop" : "Start"
             onClicked:
@@ -169,7 +166,7 @@ Column
             topInset: 0
             bottomInset: 0
             anchors.verticalCenter: parent.verticalCenter
-            textType: Qaterial.Style.TextType.Caption
+            font: Qaterial.Style.textTheme.caption
             backgroundImplicitHeight: 20
             text: root.object && "Restart"
             enabled: root.object && root.object.isRunning
@@ -189,7 +186,7 @@ Column
             anchors.verticalCenter: parent.verticalCenter
             checked: root.object && root.object.useWorkerThread
             elide: Text.ElideRight
-            textType: Qaterial.Style.TextType.Caption
+            font: Qaterial.Style.textTheme.caption
             onClicked: if(root.object) root.object.useWorkerThread = checked
         }
     }
