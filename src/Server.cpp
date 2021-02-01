@@ -77,7 +77,7 @@ Server::Server(QObject* parent) :
                 return;
             }
 
-            auto socket = newSocket(this);
+            auto* socket = newSocket(this);
             socket->setUseWorkerThread(useWorkerThread());
 
             connect(socket, &Socket::startFailed, this,
@@ -212,7 +212,7 @@ bool Server::startWorker()
 bool Server::stopWorker()
 {
     // Destroy every clients
-    for(const auto client: *this)
+    for(auto* const client: *this)
     {
         LOG_INFO("Destroy client {}:{}", client->peerAddress().toStdString(),
             client->peerPort());
@@ -307,7 +307,7 @@ bool Server::restart()
 
 Socket* Server::getSocket(const QString& address, const quint16 port) const
 {
-    for(const auto socket: *this)
+    for(auto* const socket: *this)
     {
         if(address == socket->peerAddress() && port == socket->peerPort())
             return socket;
@@ -318,7 +318,7 @@ Socket* Server::getSocket(const QString& address, const quint16 port) const
 QList<Socket*> Server::getSockets(const QString& address) const
 {
     QList<Socket*> l;
-    for(const auto socket: *this)
+    for(auto* const socket: *this)
     {
         if(address == socket->peerAddress())
             l.append(socket);
