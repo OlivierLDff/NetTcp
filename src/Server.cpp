@@ -118,7 +118,8 @@ Server::Server(QObject* parent) :
             LOG_INFO("Client {}:{} connected",
                 socket->peerAddress().toStdString(),
                 uint16_t(socket->peerPort()));
-            connect(socket, &Socket::isConnectedChanged, socket,
+
+            connect(socket, &Socket::isConnectedChanged, this,
                 [this, socket](bool connected)
                 {
                     if(!connected)
