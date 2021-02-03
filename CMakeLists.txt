@@ -211,9 +211,9 @@ endif()
 target_link_libraries(${NETTCP_TARGET} PUBLIC
   spdlog
   QOlm
-  Qt5::Core
-  Qt5::Qml
-  Qt5::Network
+  Qt::Core
+  Qt::Qml
+  Qt::Network
   )
 set_target_properties(${NETTCP_TARGET} PROPERTIES FOLDER ${NETTCP_FOLDER_PREFIX})
 
