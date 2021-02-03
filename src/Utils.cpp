@@ -87,7 +87,9 @@ static void NetTcp_registerTypes(const char* uri, const quint8 major, const quin
 void NetTcp_loadResources()
 {
     LOG_DEV_INFO("Load NetTcp.qrc v{}", qPrintable(net::tcp::Version::version().readable()));
+#ifdef NETTCP_ENABLE_QML
     Q_INIT_RESOURCE(NetTcp);
+#endif
 }
 
 #ifndef NETTCP_STATIC

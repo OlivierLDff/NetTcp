@@ -38,6 +38,16 @@ set(NETTCP_PROJECT "NetTcp" CACHE STRING "Project Name")
 set(NETTCP_TARGET ${NETTCP_PROJECT} CACHE STRING "NetTcp library name")
 set(NETTCP_VERSION ${NETTCP_VERSION_MAJOR}.${NETTCP_VERSION_MINOR}.${NETTCP_VERSION_PATCH} CACHE STRING "NetTcp current version, this is only decorative and will not configure any files" FORCE)
 
+# CREATE PROJECT
+
+project(${NETTCP_PROJECT} VERSION ${NETTCP_VERSION} LANGUAGES C CXX)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(MAIN_PROJECT OFF)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(MAIN_PROJECT ON)
+endif()
+
 set(NETTCP_BUILD_SHARED OFF CACHE BOOL "Build as a shared library (ON) or as static (OFF)")
 set(NETTCP_FOLDER_PREFIX ${NETTCP_PROJECT} CACHE STRING "Prefix folder for all NetTcp generated targets in generated project (only decorative)")
 
@@ -47,14 +57,8 @@ set(NETTCP_ENABLE_PCH ON CACHE BOOL
  This can speed up compilation time.")
 
 set(NETTCP_ENABLE_QML ON CACHE BOOL "Embedded Debug Qml module for NetTcp class")
-
-# Example
 set(NETTCP_ENABLE_EXAMPLES OFF CACHE BOOL "Create or not a target for examples")
-
-# CREATE PROJECT
-
-project(${NETTCP_PROJECT} VERSION ${NETTCP_VERSION} LANGUAGES C CXX)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(NETTCP_ENABLE_INSTALL OFF CACHE BOOL "Enable NetTcp install")
 
 # LOG OPTIONS
 
@@ -73,6 +77,7 @@ message(STATUS "NETTCP_ENABLE_QML         : " ${NETTCP_ENABLE_QML})
 # Install
 message(STATUS "NETTCP_ENABLE_INSTALL     : " ${NETTCP_ENABLE_INSTALL})
 if(NETTCP_ENABLE_INSTALL)
+  message(WARNING "NETTCP_ENABLE_INSTALL not yet supported")
   message(STATUS "NETTCP_INSTALL_PREFIX     : " ${NETTCP_INSTALL_PREFIX})
 endif(NETTCP_ENABLE_INSTALL)
 
@@ -200,6 +205,7 @@ target_include_directories(${NETTCP_TARGET} PUBLIC $<BUILD_INTERFACE:${NETTCP_IN
 set_target_properties(${NETTCP_TARGET} PROPERTIES AUTOMOC TRUE)
 if(NETTCP_ENABLE_QML)
   set_target_properties(${NETTCP_TARGET} PROPERTIES AUTORCC TRUE)
+  target_compile_definitions(${NETTCP_TARGET} PRIVATE -DNETTCP_ENABLE_QML)
 endif()
 
 target_link_libraries(${NETTCP_TARGET} PUBLIC
