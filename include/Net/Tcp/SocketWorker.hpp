@@ -7,15 +7,16 @@
 #include <Net/Tcp/Export.hpp>
 
 // Qt Headers
-#include <QObject>
-#include <QTcpSocket>
+#include <QtCore/QObject>
+#include <QtNetwork/QAbstractSocket>
 
 // STL Header
 #include <memory>
 
 // ───── DECLARATION ─────
 
-class QTimer;
+QT_FORWARD_DECLARE_CLASS(QTcpSocket);
+QT_FORWARD_DECLARE_CLASS(QTimer);
 
 namespace net {
 namespace tcp {
@@ -40,7 +41,7 @@ private:
     quintptr _socketDescriptor = 0;
     QString _address;
     quint16 _port = 0;
-    std::unique_ptr<QTcpSocket> _socket = nullptr;
+    std::unique_ptr<QTcpSocket> _socket;
 
     // ──────── CONTROL FROM SOCKET API ────────
 public Q_SLOTS:
@@ -72,8 +73,8 @@ protected Q_SLOTS:
     virtual void onDisconnected();
 
 Q_SIGNALS:
-    void startSuccess(const QString& peerAddress, const quint16 peerPort,
-        const QString& localAddress, const quint16 localPort);
+    void startSuccess(
+        const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort);
     void startFailed();
     void connectionChanged(bool connected);
     void socketError(int error, QString description);

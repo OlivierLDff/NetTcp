@@ -6,7 +6,7 @@
 #include <Net/Tcp/Logger.hpp>
 
 // Qt Headers
-#include <QThread>
+#include <QtCore/QThread>
 
 // ───── DECLARATION ─────
 

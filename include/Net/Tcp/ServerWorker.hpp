@@ -7,7 +7,7 @@
 #include <Net/Tcp/Export.hpp>
 
 // Qt Headers
-#include <QTcpServer>
+#include <QtNetwork/QTcpServer>
 
 // ───── DECLARATION ─────
 

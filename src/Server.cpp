@@ -7,8 +7,8 @@
 #include <Net/Tcp/Logger.hpp>
 
 // Qt Headers
-#include <QTimer>
-#include <QTcpSocket>
+#include <QtCore/QTimer>
+#include <QtNetwork/QTcpSocket>
 
 // ───── DECLARATION ─────
 

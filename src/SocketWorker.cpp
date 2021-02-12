@@ -5,8 +5,9 @@
 #include <Net/Tcp/Logger.hpp>
 
 // Qt Headers
-#include <QHostAddress>
-#include <QTimer>
+#include <QtCore/QTimer>
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QTcpSocket>
 
 // ───── DECLARATION ─────
 
