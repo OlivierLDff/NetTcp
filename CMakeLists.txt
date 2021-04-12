@@ -1,24 +1,41 @@
+# MIT License
 #
-#   NetTcp CMake build script
+# Copyright (c) 2020 Olivier Le Doeuff
 #
-#   Copyright Olivier Le Doeuff 2020
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
-# ┌──────────────────────────────────────────────────────────────────┐
-# │                       CMAKE PROPERTIES                           │
-# └──────────────────────────────────────────────────────────────────┘
+# ── CMAKE PROPERTIES ──
 
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-# ┌──────────────────────────────────────────────────────────────────┐
-# │                       PROJECT SETTINGS                           │
-# └──────────────────────────────────────────────────────────────────┘
+set(NETTCP_MAIN_PROJECT OFF)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(NETTCP_MAIN_PROJECT ON)
+endif()
+
+# ── PROJECT SETTINGS ──
 
 # OPTIONS
 
 set(NETTCP_VERSION_MAJOR 1)
 set(NETTCP_VERSION_MINOR 2)
-set(NETTCP_VERSION_PATCH 1)
+set(NETTCP_VERSION_PATCH 2)
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
   execute_process(
     COMMAND git rev-parse --short HEAD
@@ -40,12 +57,9 @@ set(NETTCP_VERSION ${NETTCP_VERSION_MAJOR}.${NETTCP_VERSION_MINOR}.${NETTCP_VERS
 
 # CREATE PROJECT
 
-project(${NETTCP_PROJECT} VERSION ${NETTCP_VERSION} LANGUAGES C CXX)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-set(MAIN_PROJECT OFF)
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-  set(MAIN_PROJECT ON)
+project(${NETTCP_PROJECT} VERSION ${NETTCP_VERSION} LANGUAGES CXX)
+if(NETTCP_MAIN_PROJECT)
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
 set(NETTCP_BUILD_SHARED OFF CACHE BOOL "Build as a shared library (ON) or as static (OFF)")
@@ -58,7 +72,7 @@ set(NETTCP_ENABLE_PCH ON CACHE BOOL
 
 set(NETTCP_ENABLE_QML ON CACHE BOOL "Embedded Debug Qml module for NetTcp class")
 set(NETTCP_ENABLE_EXAMPLES OFF CACHE BOOL "Create or not a target for examples")
-set(NETTCP_ENABLE_INSTALL ${MAIN_PROJECT} CACHE BOOL "Enable NetTcp install")
+set(NETTCP_ENABLE_INSTALL ${NETTCP_MAIN_PROJECT} CACHE BOOL "Enable NetTcp install")
 
 # LOG OPTIONS
 
@@ -84,9 +98,7 @@ endif(NETTCP_ENABLE_INSTALL)
 
 message(STATUS "---------------- DONE WITH OPTIONS. -----------------")
 
-# ┌──────────────────────────────────────────────────────────────────┐
-# │                       DEPENDENCIES                               │
-# └──────────────────────────────────────────────────────────────────┘
+# ── DEPENDENCIES ──
 
 find_package(Qt5 REQUIRED COMPONENTS
   Core
@@ -98,12 +110,11 @@ if(NETTCP_ENABLE_QML)
   find_package(Qt5 REQUIRED COMPONENTS QuickCompiler)
 endif()
 
+include(cmake/Dependencies.cmake)
 include(cmake/FetchSpdlog.cmake)
 include(cmake/FetchQOlm.cmake)
 
-# ┌──────────────────────────────────────────────────────────────────┐
-# │                          NETTCP                                  │
-# └──────────────────────────────────────────────────────────────────┘
+# ── NETTCP ──
 
 if(NETTCP_ENABLE_QML)
   file(GLOB_RECURSE NETTCP_QML_SRCS qml/*.qml)
@@ -229,10 +240,14 @@ target_compile_definitions(${NETTCP_TARGET} PRIVATE -DNETTCP_VERSION_PATCH=${NET
 target_compile_definitions(${NETTCP_TARGET} PRIVATE -DNETTCP_VERSION_TAG=${NETTCP_VERSION_TAG})
 target_compile_definitions(${NETTCP_TARGET} PRIVATE -DNETTCP_VERSION_TAG_HEX=${NETTCP_VERSION_TAG_HEX})
 
-# ┌──────────────────────────────────────────────────────────────────┐
-# │                         EXAMPLES                                 │
-# └──────────────────────────────────────────────────────────────────┘
+# ── EXAMPLES ──
 
 if(NETTCP_ENABLE_EXAMPLES)
   add_subdirectory(examples)
+endif()
+
+# ── CONFIGURATION ──
+
+if(NETTCP_MAIN_PROJECT)
+  include(cmake/PrintConfiguration.cmake)
 endif()
