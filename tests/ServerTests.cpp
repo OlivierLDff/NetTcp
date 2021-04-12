@@ -112,7 +112,7 @@ public:
         QTest::qWait(10000);
         timer.stop();
         // Give time to finish last connection
-        QTest::qWait(100);
+        QTest::qWait(1000);
         qInfo() << "Connected Count : " << connectedCount;
         ASSERT_TRUE(connectedCount > 50);
         ASSERT_EQ(newClientSpy.count(), connectedCount);
