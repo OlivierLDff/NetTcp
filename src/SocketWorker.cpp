@@ -196,9 +196,9 @@ void SocketWorker::onConnected()
     Q_ASSERT(_socket);
     stopWatchdog();
     LOG_INFO("Socket is connected to {}:{}", qPrintable(_socket->peerAddress().toString()), _socket->peerPort());
-    Q_EMIT connectionChanged(true);
     Q_EMIT startSuccess(_socket ? _socket->peerAddress().toString() : "", _socket ? _socket->peerPort() : 0,
         _socket ? _socket->localAddress().toString() : "", _socket ? _socket->localPort() : 0);
+    Q_EMIT connectionChanged(true);
 
     startBytesCounter();
 }
