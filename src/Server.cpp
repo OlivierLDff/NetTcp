@@ -48,9 +48,9 @@ using namespace net::tcp;
 // ───── CLASS ─────
 
 Server::Server(QObject* parent) :
-    IServer(parent, {"address", "port", "peerAddress", "peerPort"}), _worker(std::make_unique<ServerWorker>())
+    IServer(parent, {"address", "port", "peerAddress", "peerPort"}), _worker(new ServerWorker(this))
 {
-    connect(_worker.get(), &ServerWorker::newIncomingConnection, this,
+    connect(_worker, &ServerWorker::newIncomingConnection, this,
         [this](qintptr handle)
         {
             if(!handle)
@@ -101,7 +101,7 @@ Server::Server(QObject* parent) :
             }
         });
 
-    connect(_worker.get(), &ServerWorker::acceptError, this,
+    connect(_worker, &ServerWorker::acceptError, this,
         [this](int error)
         {
             // todo : Use our own enum exposed to qml
@@ -222,9 +222,9 @@ void Server::startWatchdog()
 {
     if(!_watchdog)
     {
-        _watchdog = std::make_unique<QTimer>();
+        _watchdog = new QTimer(this);
         connect(
-            _watchdog.get(), &QTimer::timeout, this,
+            _watchdog, &QTimer::timeout, this,
             [this]()
             {
                 // Watchdog shouldn't be started is worker is listening with success
@@ -243,7 +243,12 @@ void Server::startWatchdog()
     _watchdog->start(watchdogPeriod());
 }
 
-void Server::stopWatchdog() { _watchdog = nullptr; }
+void Server::stopWatchdog()
+{
+    if(_watchdog)
+        _watchdog->deleteLater();
+    _watchdog = nullptr;
+}
 
 Socket* Server::newSocket(QObject* parent) { return new Socket(parent); }
 

@@ -7,11 +7,10 @@
 #include <Net/Tcp/ISocket.hpp>
 
 // Stl Headers
-#include <memory>
 
 // ───── DECLARATION ─────
 
-class QThread;
+QT_FORWARD_DECLARE_CLASS(QThread);
 
 namespace net {
 namespace tcp {
@@ -50,13 +49,13 @@ public Q_SLOTS:
 
     // ──────── WORKER ────────
 private:
-    std::unique_ptr<SocketWorker> _worker;
-    std::unique_ptr<QThread> _workerThread;
+    SocketWorker* _worker = nullptr;
+    QThread* _workerThread = nullptr;
 
 private Q_SLOTS:
     void killWorker();
-    void onStartSuccess(const QString& peerAddress, const quint16 peerPort,
-        const QString& localAddress, const quint16 localPort);
+    void onStartSuccess(
+        const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort);
     void onStartFail();
     void onBytesReceived(const uint64_t count);
     void onBytesSent(const uint64_t count);
@@ -67,7 +66,7 @@ Q_SIGNALS:
 
     // ──────── CUSTOM WORKER API ────────
 protected:
-    virtual std::unique_ptr<class SocketWorker> createWorker();
+    virtual SocketWorker* createWorker();
 };
 
 }

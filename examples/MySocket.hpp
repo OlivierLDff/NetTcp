@@ -1,4 +1,4 @@
-#ifndef __NETTCP_MYSOCKET_HPP__
+﻿#ifndef __NETTCP_MYSOCKET_HPP__
 #define __NETTCP_MYSOCKET_HPP__
 
 #include <MySocketWorker.hpp>
@@ -11,7 +11,7 @@ public:
     MySocket(QObject* parent = nullptr) : net::tcp::Socket(parent) {};
 
 protected:
-    std::unique_ptr<net::tcp::SocketWorker> createWorker() override;
+    net::tcp::SocketWorker* createWorker() override;
 
 Q_SIGNALS:
     void sendString(const QString& s);
