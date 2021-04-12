@@ -6,12 +6,9 @@
 // Library Headers
 #include <Net/Tcp/IServer.hpp>
 
-// Stl Headers
-#include <memory>
-
 // ───── DECLARATION ─────
 
-class QTimer;
+QT_FORWARD_DECLARE_CLASS(QTimer);
 
 namespace net {
 namespace tcp {
@@ -44,11 +41,9 @@ public Q_SLOTS:
     bool start(const QString& address, const quint16 port) override final;
     bool stop() override final;
     bool restart() override final;
-    Socket* getSocket(
-        const QString& address, const quint16 port) const override final;
+    Socket* getSocket(const QString& address, const quint16 port) const override final;
     QList<Socket*> getSockets(const QString& address) const override final;
-    void disconnectFrom(
-        const QString& address, const quint16 port) override final;
+    void disconnectFrom(const QString& address, const quint16 port) override final;
     void disconnectFrom(const QString& address) override final;
 
 protected:
@@ -68,8 +63,8 @@ private:
     void stopWatchdog();
 
 private:
-    std::unique_ptr<ServerWorker> _worker;
-    std::unique_ptr<QTimer> _watchdog;
+    ServerWorker* _worker = nullptr;
+    QTimer* _watchdog = nullptr;
 };
 
 }

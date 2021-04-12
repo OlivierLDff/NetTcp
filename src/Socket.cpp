@@ -57,8 +57,7 @@ bool Socket::setPeerAddress(const QString& value)
     {
         if(!socketDescriptor() && isRunning())
         {
-            LOG_INFO("Peer Address is {}. Restart the worker for update.",
-                value.toStdString());
+            LOG_INFO("Peer Address is {}. Restart the worker for update.", value.toStdString());
             restart();
         }
         else
@@ -76,8 +75,7 @@ bool Socket::setPeerPort(const quint16& value)
     {
         if(!socketDescriptor() && isRunning())
         {
-            LOG_INFO("Peer Port is {}. Restart the worker for update.",
-                static_cast<std::uint16_t>(value));
+            LOG_INFO("Peer Port is {}. Restart the worker for update.", static_cast<std::uint16_t>(value));
             restart();
         }
         else
@@ -96,8 +94,7 @@ bool Socket::setUseWorkerThread(const bool& value)
         if(isRunning())
         {
             LOG_INFO("Restart worker because {}",
-                value ? "it use it's own thread now" :
-                        "it's not using it's own thread anymore");
+                value ? "it use it's own thread now" : "it's not using it's own thread anymore");
             restart();
         }
         return true;
@@ -117,36 +114,39 @@ bool Socket::start()
 
     if(socketDescriptor())
     {
-        LOG_INFO("Start tcp socket via socketDescriptor {}",
-            signed(socketDescriptor()));
+        LOG_INFO("Start tcp socket via socketDescriptor {}", signed(socketDescriptor()));
     }
     else
     {
-        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()),
-            signed(peerPort()));
+        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()), signed(peerPort()));
     }
 
-    Q_ASSERT(_worker.get() == nullptr);
-    Q_ASSERT(_workerThread.get() == nullptr);
+    Q_ASSERT(_worker == nullptr);
+    Q_ASSERT(_workerThread == nullptr);
 
     _worker = createWorker();
 
     if(useWorkerThread())
     {
-        _workerThread = std::make_unique<QThread>();
+        _workerThread = new QThread(this);
+        _worker->moveToThread(_workerThread);
+        connect(_workerThread, &QThread::finished, _worker, &QObject::deleteLater);
 
-        if(objectName().size())
+        if(!objectName().isEmpty())
+        {
             _workerThread->setObjectName(objectName() + " Worker");
+        }
         else
         {
             if(socketDescriptor())
-                _workerThread->setObjectName(
-                    "Socket Worker sd" + QString::number(socketDescriptor()));
+                _workerThread->setObjectName("Socket Worker sd" + QString::number(socketDescriptor()));
             else
-                _workerThread->setObjectName("Socket Worker " + peerAddress() +
-                                             ":" + QString::number(peerPort()));
+                _workerThread->setObjectName("Socket Worker " + peerAddress() + ":" + QString::number(peerPort()));
         }
-        _worker->moveToThread(_workerThread.get());
+    }
+    else
+    {
+        _worker->setParent(this);
     }
 
     if(socketDescriptor())
@@ -160,27 +160,18 @@ bool Socket::start()
         _worker->_port = peerPort();
     }
 
-    connect(_worker.get(), &SocketWorker::startSuccess, this,
-        &Socket::onStartSuccess);
-    connect(
-        _worker.get(), &SocketWorker::startFailed, this, &Socket::onStartFail);
-    connect(_worker.get(), &SocketWorker::connectionChanged, this,
-        &Socket::setConnected);
-    connect(
-        _worker.get(), &SocketWorker::socketError, this, &Socket::socketError);
-    connect(_worker.get(), &SocketWorker::bytesReceived, this,
-        &Socket::onBytesReceived);
-    connect(
-        _worker.get(), &SocketWorker::bytesSent, this, &Socket::onBytesSent);
-    connect(this, &Socket::startWorker, _worker.get(), &SocketWorker::onStart);
+    connect(_worker, &SocketWorker::startSuccess, this, &Socket::onStartSuccess);
+    connect(_worker, &SocketWorker::startFailed, this, &Socket::onStartFail);
+    connect(_worker, &SocketWorker::connectionChanged, this, &Socket::setConnected);
+    connect(_worker, &SocketWorker::socketError, this, &Socket::socketError);
+    connect(_worker, &SocketWorker::bytesReceived, this, &Socket::onBytesReceived);
+    connect(_worker, &SocketWorker::bytesSent, this, &Socket::onBytesSent);
+    connect(this, &Socket::startWorker, _worker, &SocketWorker::onStart);
     if(useWorkerThread())
-        connect(this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop,
-            Qt::BlockingQueuedConnection);
+        connect(this, &Socket::stopWorker, _worker, &SocketWorker::onStop, Qt::BlockingQueuedConnection);
     else
-        connect(
-            this, &Socket::stopWorker, _worker.get(), &SocketWorker::onStop, Qt::DirectConnection);
-    connect(this, &Socket::watchdogPeriodChanged, _worker.get(),
-        &SocketWorker::onWatchdogPeriodChanged);
+        connect(this, &Socket::stopWorker, _worker, &SocketWorker::onStop, Qt::DirectConnection);
+    connect(this, &Socket::watchdogPeriodChanged, _worker, &SocketWorker::onWatchdogPeriodChanged);
 
     if(_workerThread)
         _workerThread->start();
@@ -253,33 +244,35 @@ void Socket::killWorker()
     if(!_worker)
         return;
 
-    LOG_DEV_INFO("Stop Worker [{}]", static_cast<void*>(_worker.get()));
+    LOG_DEV_INFO("Stop Worker [{}]", static_cast<void*>(_worker));
     Q_EMIT stopWorker();
 
-    LOG_DEV_INFO("Disconnect Worker [{}]", static_cast<void*>(_worker.get()));
-    Q_ASSERT(_worker.get());
-    disconnect(_worker.get(), nullptr, this, nullptr);
-    disconnect(this, nullptr, _worker.get(), nullptr);
+    LOG_DEV_INFO("Disconnect Worker [{}]", static_cast<void*>(_worker));
+    Q_ASSERT(_worker);
+    disconnect(_worker, nullptr, this, nullptr);
+    disconnect(this, nullptr, _worker, nullptr);
 
     if(_workerThread)
     {
         // Ask to delete later in the event loop
         LOG_DEV_INFO("Kill worker thread ...");
-        _workerThread->exit();
+        _workerThread->quit();
         _workerThread->wait();
-        _workerThread.release()->deleteLater();
-        _worker.release()->deleteLater();
+        _workerThread->deleteLater();
         LOG_DEV_INFO("... Done");
+        _workerThread = nullptr;
+        _worker = nullptr;
     }
     else if(_worker)
     {
-        LOG_DEV_INFO("Delete worker [{}] later", static_cast<void*>(_worker.get()));
-        _worker.release()->deleteLater();
+        LOG_DEV_INFO("Delete worker [{}] later", static_cast<void*>(_worker));
+        _worker->deleteLater();
+        _worker = nullptr;
     }
 }
 
-void Socket::onStartSuccess(const QString& peerAddress, const quint16 peerPort,
-    const QString& localAddress, const quint16 localPort)
+void Socket::onStartSuccess(
+    const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort)
 {
     if(socketDescriptor())
     {
@@ -309,7 +302,4 @@ void Socket::onBytesSent(const uint64_t count)
     setTxBytesTotal(txBytesTotal() + count);
 }
 
-std::unique_ptr<SocketWorker> Socket::createWorker()
-{
-    return std::make_unique<SocketWorker>();
-}
+SocketWorker* Socket::createWorker() { return new SocketWorker; }

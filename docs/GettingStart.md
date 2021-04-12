@@ -55,6 +55,8 @@ The example is self explanatory.
 * Custom signals & slots are present to communicate with `Socket`.
 
 ```cpp
+#include <Net/Tcp/SocketWorker.hpp>
+
 class MySocketWorker : public net::tcp::SocketWorker
 {
     Q_OBJECT
@@ -149,9 +151,12 @@ Now let's implement a custom `Socket`. It will be responsible of:
 
 * Sending string to the worker
 * Receiving string from the worker
-* Create the wanted custom worker by overriding `std::unique_ptr<net::tcp::SocketWorker> createWorker()`.
+* Create the wanted custom worker by overriding `net::tcp::SocketWorker* createWorker()`.
 
 ```cpp
+#include <Net/Tcp/Socket.hpp>
+#include "MySocketWorker.hpp"
+
 class MySocket : public net::tcp::Socket
 {
     Q_OBJECT
@@ -159,17 +164,17 @@ public:
     MySocket(QObject* parent = nullptr) : net::tcp::Socket(parent) {}
 
 protected:
-    std::unique_ptr<net::tcp::SocketWorker> createWorker() override
+    net::tcp::SocketWorker* createWorker() override
     {
-        auto worker = std::make_unique<MySocketWorker>();
+        auto worker = new MySocketWorker;
 
         // Send string to worker
-        connect(this, &MySocket::sendString, worker.get(), &MySocketWorker::onSendString);
+        connect(this, &MySocket::sendString, worker, &MySocketWorker::onSendString);
 
         // Receive string from worker
-        connect(worker.get(), &MySocketWorker::stringAvailable, this, &MySocket::stringReceived);
+        connect(worker, &MySocketWorker::stringAvailable, this, &MySocket::stringReceived);
 
-        return std::move(worker);
+        return worker;
     }
 
 Q_SIGNALS:
@@ -181,6 +186,8 @@ Q_SIGNALS:
 ### Start the client
 
 ```cpp
+#include "MySocket.hpp"
+
 int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
@@ -208,11 +215,13 @@ Let's create a `MyServer` that create `MySocket` for each client that connect. W
 * Override `bool canAcceptNewClient()` to give condition to accept a client.
 
 ```cpp
+#include <Net/Tcp/Server.hpp>
+
 class MyServer : public net::tcp::Server
 {
     Q_OBJECT
 protected:
-    net::tcp::AbstractSocket* newTcpSocket(QObject* parent) override
+    net::tcp::Socket* newTcpSocket(QObject* parent) override
     {
         const auto s = new MySocket(parent);
         connect(s, &MySocket::stringReceived, [this, s](const QString& string)
@@ -257,7 +266,7 @@ A watchdog will take care a rebinding to the interface/port if something failed.
 It's possible to react to multiple signals from the `Server`.
 
 * `isListeningChanged` tell if the Server is correctly listening to `port` and `address`.
-* `void acceptError(int error, const QString description)` indicate an error occured with  a client connection.
+* `void acceptError(int error, const QString description)` indicate an error occurred with  a client connection.
 * `void newClient(const QString& address, const quint16 port)` tell when a new client is connected
 * `void clientLost(const QString& address, const quint16 port);` tell when a client got disconnected
 
