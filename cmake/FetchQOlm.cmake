@@ -7,7 +7,6 @@ FetchContent_Declare(
   QOlm
   GIT_REPOSITORY ${QOLM_REPOSITORY}
   GIT_TAG        ${QOLM_TAG}
-  GIT_SHALLOW    1
 )
 
 FetchContent_MakeAvailable(QOlm)
