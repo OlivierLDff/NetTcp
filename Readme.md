@@ -1,5 +1,7 @@
 # NetTcp
 
+[![CI](https://github.com/OlivierLDff/NetTcp/actions/workflows/main.yml/badge.svg)](https://github.com/OlivierLDff/NetTcp/actions/workflows/main.yml)
+
 NetTcp provide a Tcp `Server` that create Tcp `Socket` for each incoming connections for server side.
 
 A `Socket` can also be used on client side to connect to a remote server.
