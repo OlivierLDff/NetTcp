@@ -35,3 +35,10 @@ message(STATUS "  EchoClientServer  : cmake --build . --target NetTcp_EchoClient
 message(STATUS "  FuzzDisconnectionClientServer : cmake --build . --target NetTcp_FuzzDisconnectionClientServer --config ${CMAKE_BUILD_TYPE} ${PARALLEL_LEVEL}")
 message(STATUS "  FuzzDisconnectionServerClient : cmake --build . --target NetTcp_FuzzDisconnectionServerClient --config ${CMAKE_BUILD_TYPE} ${PARALLEL_LEVEL}")
 endif()
+
+if(TARGET "${NETTCP_TARGET}Tests")
+message(STATUS " ")
+message(STATUS "Tests:")
+message(STATUS "  NetTcpTests   : cmake --build . --target ${NETTCP_TARGET}Tests --config ${CMAKE_BUILD_TYPE} ${PARALLEL_LEVEL}")
+message(STATUS "  Run Tests     : ctest -C ${CMAKE_BUILD_TYPE} . --verbose --progress")
+endif()

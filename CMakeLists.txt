@@ -72,6 +72,7 @@ set(NETTCP_ENABLE_PCH ON CACHE BOOL
 
 set(NETTCP_ENABLE_QML ON CACHE BOOL "Embedded Debug Qml module for NetTcp class")
 set(NETTCP_ENABLE_EXAMPLES OFF CACHE BOOL "Create or not a target for examples")
+set(NETTCP_ENABLE_TESTS OFF CACHE BOOL "Create or not a target for tests")
 set(NETTCP_ENABLE_INSTALL ${NETTCP_MAIN_PROJECT} CACHE BOOL "Enable NetTcp install")
 
 # LOG OPTIONS
@@ -85,6 +86,7 @@ message(STATUS "NETTCP_VERSION            : " ${NETTCP_VERSION})
 message(STATUS "NETTCP_VERSION_TAG        : " ${NETTCP_VERSION_TAG})
 message(STATUS "NETTCP_BUILD_SHARED       : " ${NETTCP_BUILD_SHARED})
 message(STATUS "NETTCP_ENABLE_EXAMPLES    : " ${NETTCP_ENABLE_EXAMPLES})
+message(STATUS "NETTCP_ENABLE_TESTS       : " ${NETTCP_ENABLE_TESTS})
 message(STATUS "NETTCP_FOLDER_PREFIX      : " ${NETTCP_FOLDER_PREFIX})
 message(STATUS "NETTCP_ENABLE_QML         : " ${NETTCP_ENABLE_QML})
 message(STATUS "NETTCP_ENABLE_PCH         : " ${NETTCP_ENABLE_PCH})
@@ -245,6 +247,14 @@ target_compile_definitions(${NETTCP_TARGET} PRIVATE -DNETTCP_VERSION_TAG_HEX=${N
 if(NETTCP_ENABLE_EXAMPLES)
   add_subdirectory(examples)
 endif()
+
+# ── NETTCP TESTS ──
+
+if(NETTCP_ENABLE_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
+
 
 # ── CONFIGURATION ──
 
