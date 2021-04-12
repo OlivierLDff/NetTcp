@@ -48,8 +48,7 @@ using namespace net::tcp;
 // ───── CLASS ─────
 
 Server::Server(QObject* parent) :
-    IServer(parent, {"address", "port", "peerAddress", "peerPort"}),
-    _worker(std::make_unique<ServerWorker>())
+    IServer(parent, {"address", "port", "peerAddress", "peerPort"}), _worker(std::make_unique<ServerWorker>())
 {
     connect(_worker.get(), &ServerWorker::newIncomingConnection, this,
         [this](qintptr handle)
@@ -69,8 +68,7 @@ Server::Server(QObject* parent) :
                 socket->setSocketDescriptor(handle);
                 const auto peerAddress = socket->peerAddress().toString();
                 const auto peerPort = socket->peerPort();
-                LOG_INFO("Refuse connection of client {}:{}",
-                    peerAddress.toStdString(), peerPort);
+                LOG_INFO("Refuse connection of client {}:{}", peerAddress.toStdString(), peerPort);
                 Q_EMIT clientRefused(peerAddress, peerPort);
                 socket->close();
                 socket->deleteLater();
@@ -90,8 +88,7 @@ Server::Server(QObject* parent) :
             connect(socket, &Socket::startSuccess, this,
                 [this, socket](const QString& address, const quint16 port)
                 {
-                    LOG_INFO("Client successful started {}:{}",
-                        qPrintable(address), signed(port));
+                    LOG_INFO("Client successful started {}:{}", qPrintable(address), signed(port));
                     append(socket);
                 });
 
@@ -111,22 +108,18 @@ Server::Server(QObject* parent) :
             Q_EMIT acceptError(error, _worker->errorString());
         });
 
-    onInserted(
-        [this](const InsertedCallbackArgs& socket)
+    onInserted(this,
+        [this](const Socket* socket)
         {
             Q_EMIT newClient(socket->peerAddress(), socket->peerPort());
-            LOG_INFO("Client {}:{} connected",
-                socket->peerAddress().toStdString(),
-                uint16_t(socket->peerPort()));
+            LOG_INFO("Client {}:{} connected", socket->peerAddress().toStdString(), uint16_t(socket->peerPort()));
 
             connect(socket, &Socket::isConnectedChanged, this,
                 [this, socket](bool connected)
                 {
                     if(!connected)
                     {
-                        LOG_INFO("Client {}:{} disconnected",
-                            socket->peerAddress().toStdString(),
-                            socket->peerPort());
+                        LOG_INFO("Client {}:{} disconnected", socket->peerAddress().toStdString(), socket->peerPort());
                         disconnect(socket, nullptr, this, nullptr);
                         disconnect(this, nullptr, socket, nullptr);
                         remove(socket);
@@ -134,8 +127,7 @@ Server::Server(QObject* parent) :
                 });
         });
 
-    onRemoved([this](const RemovedCallbackArgs& socket)
-        { Q_EMIT clientLost(socket->peerAddress(), socket->peerPort()); });
+    onRemoved(this, [this](const Socket* socket) { Q_EMIT clientLost(socket->peerAddress(), socket->peerPort()); });
 }
 
 // Defined here to avoid #include <QTimer> and <ServerWorker>
@@ -189,8 +181,7 @@ bool Server::tryStart()
     {
         LOG_ERR("Fail to start worker, start watchdog to retry in {} ms. "
                 "Reason : {}",
-            static_cast<std::uint64_t>(watchdogPeriod()),
-            _worker->errorString().toStdString());
+            static_cast<std::uint64_t>(watchdogPeriod()), _worker->errorString().toStdString());
         startWatchdog();
         return false;
     }
@@ -215,8 +206,7 @@ bool Server::stopWorker()
     // Destroy every clients
     for(auto* const client: *this)
     {
-        LOG_INFO("Destroy client {}:{}", client->peerAddress().toStdString(),
-            client->peerPort());
+        LOG_INFO("Destroy client {}:{}", client->peerAddress().toStdString(), client->peerPort());
         disconnect(client, nullptr, this, nullptr);
         client->stop();
     }
@@ -248,8 +238,7 @@ void Server::startWatchdog()
     }
     else
     {
-        LOG_INFO(
-            "Try restart server remaining {} ms", _watchdog->remainingTime());
+        LOG_INFO("Try restart server remaining {} ms", _watchdog->remainingTime());
     }
     _watchdog->start(watchdogPeriod());
 }
@@ -327,14 +316,8 @@ QList<Socket*> Server::getSockets(const QString& address) const
     return l;
 }
 
-void Server::disconnectFrom(const QString& address, const quint16 port)
-{
-    remove(getSocket(address, port));
-}
+void Server::disconnectFrom(const QString& address, const quint16 port) { remove(getSocket(address, port)); }
 
-void Server::disconnectFrom(const QString& address)
-{
-    remove(getSockets(address));
-}
+void Server::disconnectFrom(const QString& address) { remove(getSockets(address)); }
 
 bool Server::canAcceptNewClient() const { return count() < maxClientCount(); }
