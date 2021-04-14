@@ -72,7 +72,9 @@ void SocketWorker::onStart()
         }
     }
     else
+    {
         _socket->connectToHost(_address, _port);
+    }
 
     _isRunning = true;
 
