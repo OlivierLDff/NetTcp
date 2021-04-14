@@ -59,6 +59,7 @@ void SocketWorker::onStart()
 
     Q_ASSERT(!_socket);
     _socket = new QTcpSocket(this);
+    _socket->setObjectName("socket");
     if(_socketDescriptor)
     {
         const auto result = _socket->setSocketDescriptor(_socketDescriptor);
@@ -290,6 +291,7 @@ void SocketWorker::closeAndRestart()
     if(!_watchdog)
     {
         _watchdog = new QTimer(this);
+        _watchdog->setObjectName("watchdog");
         LOG_DEV_DEBUG("Allocate watchdog {}", static_cast<void*>(_watchdog));
 
         connect(_watchdog, &QTimer::timeout, this, &SocketWorker::onWatchdogTimeout);
@@ -321,6 +323,7 @@ void SocketWorker::startBytesCounter()
     Q_ASSERT(!_bytesCounterTimer);
 
     _bytesCounterTimer = new QTimer(this);
+    _bytesCounterTimer->setObjectName("bytesCounter");
     _bytesCounterTimer->setSingleShot(false);
     _bytesCounterTimer->setInterval(1000);
     connect(_bytesCounterTimer, &QTimer::timeout, this, &SocketWorker::updateDataCounter);

@@ -50,6 +50,7 @@ using namespace net::tcp;
 Server::Server(QObject* parent) :
     IServer(parent, {"address", "port", "peerAddress", "peerPort"}), _worker(new ServerWorker(this))
 {
+    _worker->setObjectName("worker");
     connect(_worker, &ServerWorker::newIncomingConnection, this,
         [this](qintptr handle)
         {
@@ -68,6 +69,7 @@ Server::Server(QObject* parent) :
                 socket->setSocketDescriptor(handle);
                 const auto peerAddress = socket->peerAddress().toString();
                 const auto peerPort = socket->peerPort();
+                socket->setObjectName(QString("refusing socket %1:%2").arg(peerAddress).arg(peerPort));
                 LOG_INFO("Refuse connection of client {}:{}", peerAddress.toStdString(), peerPort);
                 Q_EMIT clientRefused(peerAddress, peerPort);
                 socket->close();
@@ -76,6 +78,7 @@ Server::Server(QObject* parent) :
             }
 
             auto* socket = newSocket(this);
+            socket->setObjectName(QString("socket sd%1").arg(handle));
             socket->setUseWorkerThread(useWorkerThread());
 
             connect(socket, &Socket::startFailed, this,
@@ -89,6 +92,7 @@ Server::Server(QObject* parent) :
                 [this, socket](const QString& address, const quint16 port)
                 {
                     LOG_INFO("Client successful started {}:{}", qPrintable(address), signed(port));
+                    socket->setObjectName(QString("refusing socket %1:%2").arg(address).arg(port));
                     append(socket);
                 });
 
@@ -223,6 +227,7 @@ void Server::startWatchdog()
     if(!_watchdog)
     {
         _watchdog = new QTimer(this);
+        _watchdog->setObjectName("watchdog");
         connect(
             _watchdog, &QTimer::timeout, this,
             [this]()
