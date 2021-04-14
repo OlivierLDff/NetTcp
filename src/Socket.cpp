@@ -132,6 +132,9 @@ bool Socket::start()
         return false;
     }
 
+    if(_worker->objectName().isEmpty())
+        _worker->setObjectName("socketWorker");
+
     if(useWorkerThread())
     {
         _workerThread = new QThread(this);
