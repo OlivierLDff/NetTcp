@@ -58,12 +58,13 @@ void SocketWorker::onStart()
         LOG_DEV_INFO("Start worker {}:{}", qPrintable(_address), signed(_port));
 
     Q_ASSERT(!_socket);
-    _socket = std::make_unique<QTcpSocket>(this);
+    _socket = new QTcpSocket(this);
     if(_socketDescriptor)
     {
         const auto result = _socket->setSocketDescriptor(_socketDescriptor);
         if(!result)
         {
+            _socket->deleteLater();
             _socket = nullptr;
             LOG_ERR("Fail to set socket descriptor. Can't start the socket.");
             Q_EMIT startFailed();
@@ -76,15 +77,15 @@ void SocketWorker::onStart()
     _isRunning = true;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(_socket.get(), QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this,
+    connect(_socket QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this,
         &SocketWorker::onSocketError);
 #else
-    connect(_socket.get(), &QAbstractSocket::errorOccurred, this, &SocketWorker::onSocketError);
+    connect(_socket, &QAbstractSocket::errorOccurred, this, &SocketWorker::onSocketError);
 #endif
-    connect(_socket.get(), &QTcpSocket::stateChanged, this, &SocketWorker::onSocketStateChanged);
-    connect(_socket.get(), &QTcpSocket::connected, this, &SocketWorker::onConnected);
-    connect(_socket.get(), &QTcpSocket::disconnected, this, &SocketWorker::onDisconnected);
-    connect(_socket.get(), &QTcpSocket::readyRead, this, &SocketWorker::onDataAvailable);
+    connect(_socket, &QTcpSocket::stateChanged, this, &SocketWorker::onSocketStateChanged);
+    connect(_socket, &QTcpSocket::connected, this, &SocketWorker::onConnected);
+    connect(_socket, &QTcpSocket::disconnected, this, &SocketWorker::onDisconnected);
+    connect(_socket, &QTcpSocket::readyRead, this, &SocketWorker::onDataAvailable);
 
     if(_socket->state() == QAbstractSocket::ConnectedState)
         onConnected();
@@ -118,14 +119,15 @@ void SocketWorker::closeSocket()
         LOG_DEV_INFO("Close socket worker {}:{}", qPrintable(_address), signed(_port));
 
     Q_ASSERT(_socket);
-    disconnect(this, nullptr, _socket.get(), nullptr);
-    disconnect(_socket.get(), nullptr, this, nullptr);
+    disconnect(this, nullptr, _socket, nullptr);
+    disconnect(_socket, nullptr, this, nullptr);
     onDisconnected();
     _socket->close();
 
-    LOG_DEV_INFO("Delete later closed socket {}", static_cast<void*>(_socket.get()));
+    LOG_DEV_INFO("Delete later closed socket {}", static_cast<void*>(_socket));
     // very important to deleteLater here, because this function is often call from DirectConnect slot connected to socket
-    _socket.release()->deleteLater();
+    _socket->deleteLater();
+    _socket = nullptr;
 
     _pendingClosing = false;
 }
@@ -285,10 +287,10 @@ void SocketWorker::closeAndRestart()
 
     if(!_watchdog)
     {
-        _watchdog = std::make_unique<QTimer>();
-        LOG_DEV_DEBUG("Allocate watchdog {}", static_cast<void*>(_watchdog.get()));
+        _watchdog = new QTimer(this);
+        LOG_DEV_DEBUG("Allocate watchdog {}", static_cast<void*>(_watchdog));
 
-        connect(_watchdog.get(), &QTimer::timeout, this, &SocketWorker::onWatchdogTimeout);
+        connect(_watchdog, &QTimer::timeout, this, &SocketWorker::onWatchdogTimeout);
         _watchdog->setTimerType(Qt::VeryCoarseTimer);
         _watchdog->setSingleShot(true);
     }
@@ -296,21 +298,30 @@ void SocketWorker::closeAndRestart()
     LOG_INFO("Start Watchdog to attempt reconnection in {} ms", signed(_watchdogPeriod));
 }
 
-void SocketWorker::stopWatchdog() { _watchdog = nullptr; }
+void SocketWorker::stopWatchdog()
+{
+    if(_watchdog)
+    {
+        disconnect(_watchdog, &QTimer::timeout, this, nullptr);
+        _watchdog->deleteLater();
+        _watchdog = nullptr;
+    }
+}
 
 void SocketWorker::startBytesCounter()
 {
     if(_bytesCounterTimer)
     {
         LOG_DEV_ERR("_bytesCounterTimer is valid at startBytesCounter called");
+        stopBytesCounter();
     }
     // Should only be called if _bytesCounterTimer is nullptr
     Q_ASSERT(!_bytesCounterTimer);
 
-    _bytesCounterTimer = std::make_unique<QTimer>();
+    _bytesCounterTimer = new QTimer(this);
     _bytesCounterTimer->setSingleShot(false);
     _bytesCounterTimer->setInterval(1000);
-    connect(_bytesCounterTimer.get(), &QTimer::timeout, this, &SocketWorker::updateDataCounter);
+    connect(_bytesCounterTimer, &QTimer::timeout, this, &SocketWorker::updateDataCounter);
     _bytesCounterTimer->start();
 }
 
@@ -330,7 +341,12 @@ void SocketWorker::stopBytesCounter()
         Q_EMIT bytesSent(0);
     }
 
-    _bytesCounterTimer = nullptr;
+    if(_bytesCounterTimer)
+    {
+        disconnect(_bytesCounterTimer, &QTimer::timeout, this, nullptr);
+        _bytesCounterTimer->deleteLater();
+        _bytesCounterTimer = nullptr;
+    }
 }
 
 void SocketWorker::updateDataCounter()
