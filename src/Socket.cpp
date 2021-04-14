@@ -125,6 +125,12 @@ bool Socket::start()
     Q_ASSERT(_workerThread == nullptr);
 
     _worker = createWorker();
+    if(!_worker)
+    {
+        LOG_ERR("Fail to create worker. Please return a valid SocketWorker from Socket::createWorker.");
+        stop();
+        return false;
+    }
 
     if(useWorkerThread())
     {
