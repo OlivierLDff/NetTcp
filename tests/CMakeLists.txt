@@ -7,6 +7,7 @@ set(NETTCP_TESTS_TARGET "${NETTCP_TARGET}Tests")
 set(NETTCP_TESTS_SRCS
   Tests.cpp
   ServerTests.cpp
+  SocketTests.cpp
   ${PROJECT_SOURCE_DIR}/examples/MySocketWorker.cpp
   ${PROJECT_SOURCE_DIR}/examples/MySocketWorker.hpp
   ${PROJECT_SOURCE_DIR}/examples/MySocket.cpp
