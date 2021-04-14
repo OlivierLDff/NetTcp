@@ -10,9 +10,6 @@
 #include <QtCore/QObject>
 #include <QtNetwork/QAbstractSocket>
 
-// STL Header
-#include <memory>
-
 // ───── DECLARATION ─────
 
 QT_FORWARD_DECLARE_CLASS(QTcpSocket);
@@ -41,7 +38,7 @@ private:
     quintptr _socketDescriptor = 0;
     QString _address;
     quint16 _port = 0;
-    std::unique_ptr<QTcpSocket> _socket;
+    QTcpSocket* _socket = nullptr;
 
     // ──────── CONTROL FROM SOCKET API ────────
 public Q_SLOTS:
@@ -87,13 +84,13 @@ private Q_SLOTS:
 
 private:
     uint64_t _watchdogPeriod = 1000;
-    std::unique_ptr<QTimer> _watchdog;
+    QTimer* _watchdog = nullptr;
 
     // ──────── STATISTICS ────────
 private:
     quint64 _rxBytesCounter = 0;
     quint64 _txBytesCounter = 0;
-    std::unique_ptr<QTimer> _bytesCounterTimer;
+    QTimer* _bytesCounterTimer = nullptr;
 
 protected:
     void startBytesCounter();
