@@ -36,6 +36,7 @@ protected:
     NETTCP_PROPERTY(QString, address, Address);
     NETTCP_PROPERTY(quint16, port, Port);
     NETTCP_PROPERTY(bool, useWorkerThread, UseWorkerThread);
+    NETTCP_PROPERTY_D(bool, noDelay, NoDelay, true);
 
     // Max count of clients that are allowed
     NETTCP_PROPERTY_D(int, maxClientCount, MaxClientCount, 32);

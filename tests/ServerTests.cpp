@@ -147,6 +147,24 @@ TEST_F(ServerTests, echoTestWorkerThreadClientServer)
     echoTest(30003);
 }
 
+TEST_F(ServerTests, echoTestWorkerThreadClientServerNoDelay)
+{
+    server.setUseWorkerThread(true);
+    client.setUseWorkerThread(true);
+    server.setNoDelay(true);
+    client.setNoDelay(true);
+    echoTest(30009);
+}
+
+TEST_F(ServerTests, echoTestWorkerThreadClientServerDelay)
+{
+    server.setUseWorkerThread(true);
+    client.setUseWorkerThread(true);
+    server.setNoDelay(false);
+    client.setNoDelay(false);
+    echoTest(30010);
+}
+
 TEST_F(ServerTests, fuzzDisconnectionClientServer)
 {
     clientSendError = true;

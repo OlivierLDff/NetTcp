@@ -93,8 +93,7 @@ void SocketWorker::onStart()
     if(_socket->state() == QAbstractSocket::ConnectedState)
         onConnected();
 
-    // todo : maybe this should be exposed as a property on Net::Tcp::Socket object
-    _socket->setSocketOption(QAbstractSocket::LowDelayOption, true);
+    applyNoDelayOption();
 }
 
 void SocketWorker::onStop()
@@ -300,6 +299,23 @@ void SocketWorker::closeAndRestart()
     }
     _watchdog->start(_watchdogPeriod);
     LOG_INFO("Start Watchdog to attempt reconnection in {} ms", signed(_watchdogPeriod));
+}
+
+void SocketWorker::setNoDelay(bool value)
+{
+    if(value != _noDelay)
+    {
+        _noDelay = value;
+        applyNoDelayOption();
+    }
+}
+
+void SocketWorker::applyNoDelayOption() const
+{
+    if(_socket)
+    {
+        _socket->setSocketOption(QAbstractSocket::LowDelayOption, _noDelay);
+    }
 }
 
 void SocketWorker::stopWatchdog()

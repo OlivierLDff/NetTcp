@@ -35,6 +35,9 @@ private:
     bool _isConnected = false;
     // Use to avoid nested call of closeSocket()
     bool _pendingClosing = false;
+    // Try to optimize the socket for low latency.
+    // Set the TCP_NODELAY option and disable Nagle's algorithm.
+    bool _noDelay = true;
     quintptr _socketDescriptor = 0;
     QString _address;
     quint16 _port = 0;
@@ -46,6 +49,10 @@ public Q_SLOTS:
     void onStop();
     void closeSocket();
     void closeAndRestart();
+    void setNoDelay(bool value);
+
+private:
+    void applyNoDelayOption() const;
 
     // ──────── WRITE API ────────
 public:

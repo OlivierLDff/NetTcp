@@ -35,6 +35,7 @@ protected:
     NETTCP_PROPERTY(quint16, peerPort, PeerPort);
     NETTCP_PROPERTY(quintptr, socketDescriptor, SocketDescriptor);
     NETTCP_PROPERTY(bool, useWorkerThread, UseWorkerThread);
+    NETTCP_PROPERTY_D(bool, noDelay, NoDelay, true);
 
     // ──────── STATUS ────────
 protected:

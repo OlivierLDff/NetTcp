@@ -80,6 +80,7 @@ Server::Server(QObject* parent) :
             auto* socket = newSocket(this);
             socket->setObjectName(QString("socket sd%1").arg(handle));
             socket->setUseWorkerThread(useWorkerThread());
+            socket->setNoDelay(noDelay());
 
             connect(socket, &Socket::startFailed, this,
                 [this, socket]()

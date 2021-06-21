@@ -164,10 +164,12 @@ bool Socket::start()
     }
     else
     {
-        _worker->_watchdogPeriod = watchdogPeriod();
         _worker->_address = peerAddress();
         _worker->_port = peerPort();
     }
+
+    _worker->_watchdogPeriod = watchdogPeriod();
+    _worker->_noDelay = noDelay();
 
     connect(_worker, &SocketWorker::startSuccess, this, &Socket::onStartSuccess);
     connect(_worker, &SocketWorker::startFailed, this, &Socket::onStartFail);
@@ -181,6 +183,7 @@ bool Socket::start()
     else
         connect(this, &Socket::stopWorker, _worker, &SocketWorker::onStop, Qt::DirectConnection);
     connect(this, &Socket::watchdogPeriodChanged, _worker, &SocketWorker::onWatchdogPeriodChanged);
+    connect(this, &Socket::noDelayChanged, _worker, &SocketWorker::setNoDelay);
 
     if(_workerThread)
         _workerThread->start();
