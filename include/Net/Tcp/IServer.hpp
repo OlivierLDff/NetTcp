@@ -23,9 +23,7 @@ class NETTCP_API_ IServer : public qolm::QOlm<Socket>
 
     // ──────── CONSTRUCTOR ────────
 public:
-    IServer(QObject* parent = nullptr,
-        const QList<QByteArray>& exposedRoles = {},
-        const QByteArray& displayRole = {}) :
+    IServer(QObject* parent = nullptr, const QList<QByteArray>& exposedRoles = {}, const QByteArray& displayRole = {}) :
         QOlm<Socket>(parent, exposedRoles, displayRole)
     {
     }
@@ -50,8 +48,7 @@ public Q_SLOTS:
     virtual bool stop() = 0;
     virtual bool restart() = 0;
 
-    virtual Socket* getSocket(
-        const QString& address, const quint16 port) const = 0;
+    virtual Socket* getSocket(const QString& address, const quint16 port) const = 0;
     virtual QList<Socket*> getSockets(const QString& address) const = 0;
     virtual void disconnectFrom(const QString& address, const quint16 port) = 0;
     virtual void disconnectFrom(const QString& address) = 0;

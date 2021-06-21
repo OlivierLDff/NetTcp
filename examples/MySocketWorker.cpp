@@ -17,8 +17,7 @@ void MySocketWorker::onDataAvailable()
     while(waitingForData && bytesAvailable())
     {
         // Read maximum data until the whole packet have been read.
-        const auto bytesRead =
-            read(buffer + bufferLength, expectedSize - bufferLength);
+        const auto bytesRead = read(buffer + bufferLength, expectedSize - bufferLength);
         bufferLength += std::uint8_t(bytesRead);
 
         // Emit the received string when read is complete

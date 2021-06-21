@@ -11,7 +11,4 @@ using namespace net::tcp;
 
 ServerWorker::ServerWorker(QObject* parent) : QTcpServer(parent) {}
 
-void ServerWorker::incomingConnection(qintptr handle)
-{
-    Q_EMIT newIncomingConnection(handle);
-}
+void ServerWorker::incomingConnection(qintptr handle) { Q_EMIT newIncomingConnection(handle); }

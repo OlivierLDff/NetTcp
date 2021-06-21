@@ -27,7 +27,6 @@ namespace tcp {
 
 class NETTCP_API_ Class
 {
-
 };
 
 }

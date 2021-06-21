@@ -22,10 +22,8 @@
 //                  DECLARATION
 // ─────────────────────────────────────────────────────────────
 
-std::shared_ptr<spdlog::logger> appLog =
-    std::make_shared<spdlog::logger>("app");
-std::shared_ptr<spdlog::logger> serverLog =
-    std::make_shared<spdlog::logger>("server");
+std::shared_ptr<spdlog::logger> appLog = std::make_shared<spdlog::logger>("app");
+std::shared_ptr<spdlog::logger> serverLog = std::make_shared<spdlog::logger>("server");
 
 class App
 {
@@ -46,32 +44,22 @@ public:
 
         QObject::connect(&server, &MyServer::stringReceived,
             [](const QString value, const QString address, const quint16 port)
-            {
-                serverLog->info("Rx \"{}\" from server {}:{}",
-                    qPrintable(value), qPrintable(address), port);
-            });
+            { serverLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(address), port); });
 
-        QObject::connect(&server, &net::tcp::Server::isRunningChanged,
-            [](bool value) { serverLog->info("isRunning : {}", value); });
+        QObject::connect(
+            &server, &net::tcp::Server::isRunningChanged, [](bool value) { serverLog->info("isRunning : {}", value); });
         QObject::connect(&server, &net::tcp::Server::isListeningChanged,
             [](bool value) { serverLog->info("isBounded : {}", value); });
         QObject::connect(&server, &net::tcp::Server::acceptError,
-            [](int value, const QString& error)
-            { serverLog->error("accept error : {}", error.toStdString()); });
+            [](int value, const QString& error) { serverLog->error("accept error : {}", error.toStdString()); });
         QObject::connect(&server, &net::tcp::Server::newClient,
-            [](const QString& address, const quint16 port) {
-                serverLog->info(
-                    "New Client {}:{}", qPrintable(address), signed(port));
-            });
+            [](const QString& address, const quint16 port)
+            { serverLog->info("New Client {}:{}", qPrintable(address), signed(port)); });
         QObject::connect(&server, &net::tcp::Server::clientLost,
             [](const QString& address, const quint16 port)
-            {
-                serverLog->info("Client Disconnected {}:{}",
-                    qPrintable(address), signed(port));
-            });
+            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), signed(port)); });
 
-        serverLog->info(
-            "Start server on address {}:{}", qPrintable(ip), signed(port));
+        serverLog->info("Start server on address {}:{}", qPrintable(ip), signed(port));
         // server.start(port) can be called to listen from every interfaces
         server.start(ip, port);
 
@@ -89,8 +77,7 @@ static void installLoggers()
     serverLog->sinks().emplace_back(msvcSink);
 #endif
 
-    const auto stdoutSink =
-        std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    const auto stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     stdoutSink->set_level(spdlog::level::debug);
     net::tcp::Logger::registerSink(stdoutSink);
     appLog->sinks().emplace_back(stdoutSink);
@@ -110,22 +97,19 @@ int main(int argc, char* argv[])
     parser.addHelpOption();
 
     QCommandLineOption multiThreadOption(QStringList() << "t",
-        QCoreApplication::translate("main",
-            "Make the worker live in a different thread. Default false"));
+        QCoreApplication::translate("main", "Make the worker live in a different thread. Default false"));
     parser.addOption(multiThreadOption);
 
     QCommandLineOption portOption(QStringList() << "s"
                                                 << "src",
-        QCoreApplication::translate(
-            "main", "Port for rx packet. Default \"9999\"."),
+        QCoreApplication::translate("main", "Port for rx packet. Default \"9999\"."),
         QCoreApplication::translate("main", "port"));
     portOption.setDefaultValue("9999");
     parser.addOption(portOption);
 
     QCommandLineOption ipOption(QStringList() << "i"
                                               << "ip",
-        QCoreApplication::translate(
-            "main", "Ip address of multicast group. Default \"127.0.0.1\""),
+        QCoreApplication::translate("main", "Ip address of multicast group. Default \"127.0.0.1\""),
         QCoreApplication::translate("main", "ip"));
     ipOption.setDefaultValue(QStringLiteral("127.0.0.1"));
     parser.addOption(ipOption);

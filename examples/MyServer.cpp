@@ -12,8 +12,7 @@ net::tcp::Socket* MyServer::newSocket(QObject* parent)
                 Q_EMIT socket->sendErrorString();
             else
                 Q_EMIT socket->sendString(string);
-            Q_EMIT stringReceived(
-                string, socket->peerAddress(), socket->peerPort());
+            Q_EMIT stringReceived(string, socket->peerAddress(), socket->peerPort());
         });
     return socket;
 }
