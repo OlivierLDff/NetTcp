@@ -1,5 +1,3 @@
-
-include(${PROJECT_SOURCE_DIR}/cmake/FetchGTest.cmake)
 find_package(Qt5 REQUIRED COMPONENTS Test)
 
 set(NETTCP_TESTS_TARGET "${NETTCP_TARGET}Tests")
