@@ -116,6 +116,10 @@ include(cmake/Dependencies.cmake)
 include(cmake/FetchSpdlog.cmake)
 include(cmake/FetchQOlm.cmake)
 
+if(NETTCP_ENABLE_TESTS)
+  include(cmake/FetchGTest.cmake)
+endif()
+
 # ── NETTCP ──
 
 if(NETTCP_ENABLE_QML)

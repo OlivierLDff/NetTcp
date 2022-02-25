@@ -1,14 +1,19 @@
-include(FetchContent)
+include(cmake/CPM.cmake)
 
-set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog" CACHE STRING "spdlog repository url")
-set(SPDLOG_TAG "v1.x" CACHE STRING "spdlog git tag")
-
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY ${SPDLOG_REPOSITORY}
-  GIT_TAG        ${SPDLOG_TAG}
+set(SPDLOG_REPOSITORY
+    "https://github.com/gabime/spdlog"
+    CACHE STRING "Repository of spdlog"
+)
+set(SPDLOG_TAG
+    "592ea36a86a9c9049b433d9e44256d04333d8e52"
+    CACHE STRING "Git tag/branch of spdlog"
 )
 
-option(SPDLOG_ENABLE_PCH "Build static or shared library using precompiled header to speed up compilation time" ON)
-FetchContent_MakeAvailable(spdlog)
+CPMAddPackage(
+  NAME spdlog
+  GIT_REPOSITORY ${SPDLOG_REPOSITORY}
+  GIT_TAG ${SPDLOG_TAG}
+)
+
 set_target_properties(spdlog PROPERTIES FOLDER "Dependencies")
+set_target_properties(spdlog PROPERTIES POSITION_INDEPENDENT_CODE ON)
