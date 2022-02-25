@@ -4,7 +4,7 @@ set(QOLM_REPOSITORY "https://github.com/OlivierLDff/QOlm.git" CACHE STRING "QOlm
 set(QOLM_TAG master CACHE STRING "QOlm git tag")
 
 CPMAddPackage(
-  NAME qolm
+  NAME QOlm
   GIT_REPOSITORY ${QOLM_REPOSITORY}
   GIT_TAG ${QOLM_TAG}
 )
