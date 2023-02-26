@@ -147,13 +147,26 @@ std::size_t SocketWorker::write(const std::uint8_t* buffer, const std::size_t le
         return false;
     }
 
-    const auto bytesWritten = _socket->write(reinterpret_cast<const char*>(buffer), length);
-    if(bytesWritten != length)
+    std::size_t bytesWritten = 0;
+    std::size_t bytesLeft = length;
+
+    while(bytesWritten != length)
     {
-        LOG_ERR("Fail to write to socket, only wrote {}/{}", int(bytesWritten), int(length));
-        closeAndRestart();
+        const auto currentBytesWritten =
+            _socket->write(reinterpret_cast<const char*>(buffer) + bytesWritten, bytesLeft - bytesWritten);
+
+        if(currentBytesWritten < 0)
+        {
+            LOG_ERR("Fail to write to socket");
+            closeAndRestart();
+            return 0;
+        }
+
+        bytesWritten += std::size_t(currentBytesWritten);
+        bytesLeft -= std::size_t(currentBytesWritten);
     }
-    _txBytesCounter += bytesWritten;
+
+    _txBytesCounter += length;
     return bytesWritten;
 }
 
