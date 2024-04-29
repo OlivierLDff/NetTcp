@@ -35,7 +35,7 @@ endif()
 
 set(NETTCP_VERSION_MAJOR 1)
 set(NETTCP_VERSION_MINOR 3)
-set(NETTCP_VERSION_PATCH 5)
+set(NETTCP_VERSION_PATCH 6)
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
   execute_process(
     COMMAND git rev-parse --short HEAD
