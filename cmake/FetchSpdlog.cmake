@@ -15,5 +15,14 @@ CPMAddPackage(
   GIT_TAG ${SPDLOG_TAG}
 )
 
-set_target_properties(spdlog PROPERTIES FOLDER "Dependencies")
-set_target_properties(spdlog PROPERTIES POSITION_INDEPENDENT_CODE ON)
+if(NOT TARGET spdlog)
+  # Create an alias spdlog for other FetchSpdlog
+  # dependencies to work that don't have the if(TARGET spdlog) condition
+  add_library(spdlog INTERFACE)
+  target_link_libraries(spdlog INTERFACE spdlog::spdlog)
+  message(STATUS "spdlog target didn't exist, created an alias target")
+endif()
+
+if(TARGET spdlog)
+  set_target_properties(spdlog PROPERTIES FOLDER "Dependencies")
+endif()
