@@ -196,7 +196,7 @@ void SocketWorker::onSocketError(const QAbstractSocket::SocketError e)
 
 void SocketWorker::onSocketStateChanged(QAbstractSocket::SocketState socketState)
 {
-    LOG_INFO("New Socket state : {}", socketState);
+    LOG_INFO("New Socket state : {}", (int)socketState);
     if(socketState == QAbstractSocket::UnconnectedState)
     {
         onDisconnected();
