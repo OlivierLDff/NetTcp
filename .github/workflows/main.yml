@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macOS-latest, ubuntu-latest]
+        os: [windows-latest, macOS-13, ubuntu-latest]
         version: ['5.15.2']
         build_type: ['Release']
 
@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-QtCache-${{ matrix.version }}
       -
         name: ⬇ Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ matrix.version }}
           dir: ${{ github.workspace }}/Qt-${{ runner.os }}-${{ matrix.version }}
