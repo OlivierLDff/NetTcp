@@ -102,14 +102,19 @@ message(STATUS "---------------- DONE WITH OPTIONS. -----------------")
 
 # ── DEPENDENCIES ──
 
-find_package(Qt5 REQUIRED COMPONENTS
+# Check if QT_VERSION_MAJOR is defined, if not, find Qt
+if(NOT DEFINED QT_VERSION_MAJOR)
+  find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+endif()
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   Core
   Qml
   Network
 )
 
 if(NETTCP_ENABLE_QML)
-  find_package(Qt5 REQUIRED COMPONENTS QuickCompiler)
+  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS QuickCompiler)
 endif()
 
 include(cmake/Dependencies.cmake)
