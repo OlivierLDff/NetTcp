@@ -137,8 +137,11 @@ if(NETTCP_ENABLE_QML)
     source_group("Qml\\${GROUP_PATH}" FILES "${SOURCE}")
   endforeach()
 
-  # Add qml to the qtquick compiler
-  qtquick_compiler_add_resources(NETTCP_QML_RES ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc)
+  if(QT_VERSION_MAJOR EQUAL 5)
+    qtquick_compiler_add_resources(NETTCP_QML_RES ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc)
+  else()
+    qt_add_resources(NETTCP_QML_RES ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc)
+  endif()
 
   # Trick to rerun cmake each time NetTcp.qrc is updated
   configure_file(
