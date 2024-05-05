@@ -104,7 +104,7 @@ public:
         // server.start(port) can be called to listen from every interfaces
         server.start("127.0.0.1", port);
 
-        client.setWatchdogPeriod(1);
+        client.setWatchdogPeriod(10);
         client.start("127.0.0.1", port);
 
         timer.start(10);
