@@ -226,7 +226,7 @@ protected:
         const auto s = new MySocket(parent);
         connect(s, &MySocket::stringReceived, [this, s](const QString& string)
             {
-                qInfo("RX \"%s\" from client %s:%d", qPrintable(string), qPrintable(s->peerAddress()), signed(s->peerPort()));
+                qInfo("RX \"%s\" from client %s:%d", qPrintable(string), qPrintable(s->peerAddress()), int(s->peerPort()));
                 Q_EMIT s->sendString(string);
             });
         return s;

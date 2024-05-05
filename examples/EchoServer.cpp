@@ -46,20 +46,18 @@ public:
             [](const QString value, const QString address, const quint16 port)
             { serverLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(address), port); });
 
-        QObject::connect(
-            &server, &net::tcp::Server::isRunningChanged, [](bool value) { serverLog->info("isRunning : {}", value); });
+        QObject::connect(&server, &net::tcp::Server::isRunningChanged,
+            [](bool value) { serverLog->info("isRunning : {}", value); });
         QObject::connect(&server, &net::tcp::Server::isListeningChanged,
             [](bool value) { serverLog->info("isBounded : {}", value); });
         QObject::connect(&server, &net::tcp::Server::acceptError,
             [](int value, const QString& error) { serverLog->error("accept error : {}", error.toStdString()); });
-        QObject::connect(&server, &net::tcp::Server::newClient,
-            [](const QString& address, const quint16 port)
-            { serverLog->info("New Client {}:{}", qPrintable(address), signed(port)); });
-        QObject::connect(&server, &net::tcp::Server::clientLost,
-            [](const QString& address, const quint16 port)
-            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), signed(port)); });
+        QObject::connect(&server, &net::tcp::Server::newClient, [](const QString& address, const quint16 port)
+            { serverLog->info("New Client {}:{}", qPrintable(address), int(port)); });
+        QObject::connect(&server, &net::tcp::Server::clientLost, [](const QString& address, const quint16 port)
+            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), int(port)); });
 
-        serverLog->info("Start server on address {}:{}", qPrintable(ip), signed(port));
+        serverLog->info("Start server on address {}:{}", qPrintable(ip), int(port));
         // server.start(port) can be called to listen from every interfaces
         server.start(ip, port);
 
@@ -100,15 +98,13 @@ int main(int argc, char* argv[])
         QCoreApplication::translate("main", "Make the worker live in a different thread. Default false"));
     parser.addOption(multiThreadOption);
 
-    QCommandLineOption portOption(QStringList() << "s"
-                                                << "src",
+    QCommandLineOption portOption(QStringList() << "s" << "src",
         QCoreApplication::translate("main", "Port for rx packet. Default \"9999\"."),
         QCoreApplication::translate("main", "port"));
     portOption.setDefaultValue("9999");
     parser.addOption(portOption);
 
-    QCommandLineOption ipOption(QStringList() << "i"
-                                              << "ip",
+    QCommandLineOption ipOption(QStringList() << "i" << "ip",
         QCoreApplication::translate("main", "Ip address of multicast group. Default \"127.0.0.1\""),
         QCoreApplication::translate("main", "ip"));
     ipOption.setDefaultValue(QStringLiteral("127.0.0.1"));
