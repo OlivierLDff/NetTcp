@@ -114,7 +114,7 @@ public:
         // Give time to finish last connection
         QTest::qWait(1000);
         qInfo() << "Connected Count : " << connectedCount;
-        ASSERT_TRUE(connectedCount > 40);
+        ASSERT_GT(connectedCount, 40);
         ASSERT_EQ(newClientSpy.count(), connectedCount);
     }
 };
