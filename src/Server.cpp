@@ -92,7 +92,7 @@ Server::Server(QObject* parent) :
             connect(socket, &Socket::startSuccess, this,
                 [this, socket](const QString& address, const quint16 port)
                 {
-                    LOG_INFO("Client successful started {}:{}", qPrintable(address), signed(port));
+                    LOG_INFO("Client successful started {}:{}", qPrintable(address), int(port));
                     socket->setObjectName(QString("refusing socket %1:%2").arg(address).arg(port));
                     append(socket);
                 });
