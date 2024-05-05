@@ -283,8 +283,8 @@ void Socket::killWorker()
     }
 }
 
-void Socket::onStartSuccess(const QString& peerAddress, const quint16 peerPort, const QString& localAddress,
-    const quint16 localPort)
+void Socket::onStartSuccess(
+    const QString& peerAddress, const quint16 peerPort, const QString& localAddress, const quint16 localPort)
 {
     if(socketDescriptor())
     {
