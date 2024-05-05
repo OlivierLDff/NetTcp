@@ -80,20 +80,20 @@ public:
             [](int value, const QString& error) { clientLog->error("socket error : {}", error.toStdString()); });
         QObject::connect(&server, &net::tcp::Server::newClient,
             [](const QString& address, const quint16 port)
-            { serverLog->info("New Client {}:{}", qPrintable(address), signed(port)); });
+            { serverLog->info("New Client {}:{}", qPrintable(address), int(port)); });
         QObject::connect(&server, &net::tcp::Server::clientLost,
             [](const QString& address, const quint16 port)
-            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), signed(port)); });
+            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), int(port)); });
         QObject::connect(&client, &net::tcp::Socket::txBytesTotalChanged,
             [](quint64 total) { clientLog->info("Sent bytes : {}", total); });
 
-        serverLog->info("Start server on address {}:{}", qPrintable(ip), signed(port));
+        serverLog->info("Start server on address {}:{}", qPrintable(ip), int(port));
         // server.start(port) can be called to listen from every interfaces
         server.start(ip, port);
 
         client.setWatchdogPeriod(1);
         client.setUseWorkerThread(multiThreaded);
-        clientLog->info("Start client to connect to address {}, on port {}", qPrintable(ip), signed(port));
+        clientLog->info("Start client to connect to address {}, on port {}", qPrintable(ip), int(port));
         client.start(ip, port);
 
         appLog->info("Start application");

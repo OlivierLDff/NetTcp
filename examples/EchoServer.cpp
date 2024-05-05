@@ -54,12 +54,12 @@ public:
             [](int value, const QString& error) { serverLog->error("accept error : {}", error.toStdString()); });
         QObject::connect(&server, &net::tcp::Server::newClient,
             [](const QString& address, const quint16 port)
-            { serverLog->info("New Client {}:{}", qPrintable(address), signed(port)); });
+            { serverLog->info("New Client {}:{}", qPrintable(address), int(port)); });
         QObject::connect(&server, &net::tcp::Server::clientLost,
             [](const QString& address, const quint16 port)
-            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), signed(port)); });
+            { serverLog->info("Client Disconnected {}:{}", qPrintable(address), int(port)); });
 
-        serverLog->info("Start server on address {}:{}", qPrintable(ip), signed(port));
+        serverLog->info("Start server on address {}:{}", qPrintable(ip), int(port));
         // server.start(port) can be called to listen from every interfaces
         server.start(ip, port);
 

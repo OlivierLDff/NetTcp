@@ -55,7 +55,7 @@ void SocketWorker::onStart()
     if(_socketDescriptor)
         LOG_DEV_INFO("Start worker {}", std::uintptr_t(_socketDescriptor));
     else
-        LOG_DEV_INFO("Start worker {}:{}", qPrintable(_address), signed(_port));
+        LOG_DEV_INFO("Start worker {}:{}", qPrintable(_address), int(_port));
 
     Q_ASSERT(!_socket);
     _socket = new QTcpSocket(this);
@@ -118,7 +118,7 @@ void SocketWorker::closeSocket()
     if(_socketDescriptor)
         LOG_DEV_INFO("Close socket worker {}", _socketDescriptor);
     else
-        LOG_DEV_INFO("Close socket worker {}:{}", qPrintable(_address), signed(_port));
+        LOG_DEV_INFO("Close socket worker {}:{}", qPrintable(_address), int(_port));
 
     Q_ASSERT(_socket);
     disconnect(this, nullptr, _socket, nullptr);
@@ -311,7 +311,7 @@ void SocketWorker::closeAndRestart()
         _watchdog->setSingleShot(true);
     }
     _watchdog->start(_watchdogPeriod);
-    LOG_INFO("Start Watchdog to attempt reconnection in {} ms", signed(_watchdogPeriod));
+    LOG_INFO("Start Watchdog to attempt reconnection in {} ms", int(_watchdogPeriod));
 }
 
 void SocketWorker::setNoDelay(bool value)

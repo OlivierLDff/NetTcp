@@ -1,16 +1,16 @@
 include(cmake/CPM.cmake)
 
 set(GTEST_REPOSITORY
-    "https://github.com/google/googletest"
+    "https://github.com/OlivierLDff/googletest"
     CACHE STRING "googletest repository url"
 )
 set(GTEST_TAG
-    "release-1.11.0"
+    "v1.12.1"
     CACHE STRING "googletest git tag"
 )
 
 CPMAddPackage(
-  NAME googletest
+  NAME GTest
   GIT_REPOSITORY ${GTEST_REPOSITORY}
   GIT_TAG ${GTEST_TAG}
   OPTIONS "gtest_force_shared_crt ON"

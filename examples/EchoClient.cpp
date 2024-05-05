@@ -57,7 +57,7 @@ public:
             [this](const QString value)
             {
                 clientLog->info("Rx \"{}\" from server {}:{}", qPrintable(value), qPrintable(client.peerAddress()),
-                    signed(client.peerPort()));
+                    int(client.peerPort()));
             });
         QObject::connect(
             &client, &net::tcp::Socket::isRunningChanged, [](bool value) { clientLog->info("isRunning : {}", value); });
@@ -74,7 +74,7 @@ public:
             [](quint64 total) { clientLog->info("Sent bytes : {}", total); });
 
         client.setUseWorkerThread(multiThreaded);
-        clientLog->info("Start client to connect to address {}, on port {}", qPrintable(ip), signed(port));
+        clientLog->info("Start client to connect to address {}, on port {}", qPrintable(ip), int(port));
         client.start(ip, port);
 
         appLog->info("Start application");

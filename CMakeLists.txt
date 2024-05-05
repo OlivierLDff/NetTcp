@@ -102,14 +102,19 @@ message(STATUS "---------------- DONE WITH OPTIONS. -----------------")
 
 # ── DEPENDENCIES ──
 
-find_package(Qt5 REQUIRED COMPONENTS
+# Check if QT_VERSION_MAJOR is defined, if not, find Qt
+if(NOT DEFINED QT_VERSION_MAJOR)
+  find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+endif()
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   Core
   Qml
   Network
 )
 
-if(NETTCP_ENABLE_QML)
-  find_package(Qt5 REQUIRED COMPONENTS QuickCompiler)
+if(NETTCP_ENABLE_QML AND QT_VERSION_MAJOR EQUAL 5)
+  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS QuickCompiler)
 endif()
 
 include(cmake/Dependencies.cmake)
@@ -132,8 +137,11 @@ if(NETTCP_ENABLE_QML)
     source_group("Qml\\${GROUP_PATH}" FILES "${SOURCE}")
   endforeach()
 
-  # Add qml to the qtquick compiler
-  qtquick_compiler_add_resources(NETTCP_QML_RES ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc)
+  if(QT_VERSION_MAJOR EQUAL 5)
+    qtquick_compiler_add_resources(NETTCP_QML_RES ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc)
+  else()
+    qt_add_resources(NETTCP_QML_RES ${CMAKE_CURRENT_SOURCE_DIR}/qml/NetTcp.qrc)
+  endif()
 
   # Trick to rerun cmake each time NetTcp.qrc is updated
   configure_file(

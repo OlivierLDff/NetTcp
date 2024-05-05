@@ -114,11 +114,11 @@ bool Socket::start()
 
     if(socketDescriptor())
     {
-        LOG_INFO("Start tcp socket via socketDescriptor {}", signed(socketDescriptor()));
+        LOG_INFO("Start tcp socket via socketDescriptor {}", int(socketDescriptor()));
     }
     else
     {
-        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()), signed(peerPort()));
+        LOG_INFO("Start tcp socket to {}:{}", qPrintable(peerAddress()), int(peerPort()));
     }
 
     Q_ASSERT(_worker == nullptr);
