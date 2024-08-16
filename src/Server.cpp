@@ -201,7 +201,8 @@ bool Server::startWorker()
     clear();
 
     // Start to listen
-    const auto result = _worker->listen(QHostAddress(address()), port());
+    const auto hostAddress = address().isEmpty() ? QHostAddress::Any : QHostAddress(address());
+    const auto result = _worker->listen(hostAddress, port());
     setListening(result);
     return result;
 }
