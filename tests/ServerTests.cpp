@@ -38,11 +38,11 @@ public:
 
     QTimer timer;
 
-    void echoTest(quint16 port)
+    void echoTest(quint16 port, QString serverAddress = "127.0.0.1")
     {
         QSignalSpy connectedSpy(&client, &MySocket::isConnectedChanged);
         client.start("127.0.0.1", port);
-        server.start("127.0.0.1", port);
+        server.start(serverAddress, port);
         if(!client.isConnected())
         {
             ASSERT_TRUE(connectedSpy.wait());
@@ -119,6 +119,23 @@ public:
         ASSERT_EQ(newClientSpy.count(), connectedCount);
     }
 };
+
+TEST_F(ServerTests, echoTestEmptyServerHostAddress)
+{
+    server.setUseWorkerThread(false);
+    client.setUseWorkerThread(false);
+    // Empty QString -> QHostAddress is creating a QHostAddress::Any in Qt5, but QHostAddress::Null in Qt6
+    // We want to keep the behavior of Qt5
+    echoTest(30000, "");
+}
+
+TEST_F(ServerTests, echoTest0000ServerHostAddress)
+{
+    server.setUseWorkerThread(false);
+    client.setUseWorkerThread(false);
+    // This should create a QHostAddress::Any
+    echoTest(30000, "0.0.0.0");
+}
 
 TEST_F(ServerTests, echoTestMonoThread)
 {
